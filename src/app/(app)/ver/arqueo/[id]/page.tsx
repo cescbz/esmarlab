@@ -22,6 +22,7 @@ export default async function ArqueoPdfViewerPage({ params }: { params: { id: st
   return (
     <div>
       <PageHeader
+        className="no-print"
         title={`Arqueo ${session.cashRegister.name}`}
         description={`${formatDate(session.closedAt ?? session.openedAt)} · ${session.status === "ABIERTA" ? "Caja abierta" : "Caja cerrada"}`}
         actions={

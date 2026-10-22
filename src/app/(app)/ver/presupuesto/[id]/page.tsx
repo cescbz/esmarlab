@@ -22,6 +22,7 @@ export default async function QuotePdfViewerPage({ params }: { params: { id: str
   return (
     <div>
       <PageHeader
+        className="no-print"
         title={`Presupuesto ${quote.number}`}
         description={`${quote.customer.name} · ${formatDate(quote.date)}`}
         actions={

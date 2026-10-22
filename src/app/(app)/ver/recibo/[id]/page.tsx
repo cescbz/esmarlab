@@ -22,6 +22,7 @@ export default async function ReceiptPdfViewerPage({ params }: { params: { id: s
   return (
     <div>
       <PageHeader
+        className="no-print"
         title={`Recibo ${receipt.number}`}
         description={`${receipt.customer.name} · ${formatDate(receipt.date)}`}
         actions={

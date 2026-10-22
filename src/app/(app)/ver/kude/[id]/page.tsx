@@ -30,6 +30,7 @@ export default async function KudeViewerPage({
   return (
     <div>
       <PageHeader
+        className="no-print"
         title={`${isNC ? "Nota de crédito" : "Factura"} ${invoice.number}`}
         description={`${invoice.customer.name} · ${formatDate(invoice.issueDate)}`}
         actions={
