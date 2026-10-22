@@ -327,7 +327,7 @@ export function AppShell({
     <div className="flex min-h-svh bg-background">
       <aside
         className={cn(
-          "sticky top-0 hidden h-svh shrink-0 flex-col bg-sidebar transition-[width] duration-200 lg:flex",
+          "no-print sticky top-0 hidden h-svh shrink-0 flex-col bg-sidebar transition-[width] duration-200 lg:flex",
           collapsed ? "w-[64px]" : "w-[236px]"
         )}
       >
@@ -337,7 +337,7 @@ export function AppShell({
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-white/90 px-4 backdrop-blur-sm md:px-6">
+        <header className="no-print sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-white/90 px-4 backdrop-blur-sm md:px-6">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Abrir menú">
