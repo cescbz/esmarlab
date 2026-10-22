@@ -110,7 +110,7 @@ export default async function SalesReportPage({
       <Card className="mb-4 border-border/80 shadow-none">
         <CardHeader className="border-b border-border/60 px-5 py-3.5"><CardTitle className="text-sm font-semibold">Ventas por período</CardTitle></CardHeader>
         <CardContent className="p-4">
-          {chart.length === 0 ? <EmptyState icon={TrendingUp} title="Sin ventas" className="border-0 py-8" /> : <SimpleBarChart data={chart} xKey="periodo" series={[{ key: "total", label: "Ventas", color: "#0f766e" }]} height={240} />}
+          {chart.length === 0 ? <EmptyState icon={TrendingUp} title="Sin ventas" className="border-0 py-8" /> : <SimpleBarChart data={chart} xKey="periodo" series={[{ key: "total", label: "Ventas", color: "hsl(var(--chart-1))" }]} height={240} />}
         </CardContent>
       </Card>
 

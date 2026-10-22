@@ -112,9 +112,9 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
               <CardContent className="p-6">
                 <div className="flex flex-col justify-between gap-4 border-b border-border pb-4 sm:flex-row">
                   <div className="flex gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#0b2f31] text-lg font-black text-white">E</div>
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand text-lg font-bold text-white">E</div>
                     <div>
-                      <p className="text-lg font-bold tracking-tight text-[#0b2f31]">{company.razonSocial}</p>
+                      <p className="text-lg font-bold tracking-tight text-brand">{company.razonSocial}</p>
                       <p className="text-[10px] text-muted-foreground">Uniformes empresariales · EPP · Producción</p>
                       <p className="mt-1 text-[10px] text-muted-foreground">
                         RUC {company.ruc}-{company.dv} · {company.address}, {company.city}
@@ -123,7 +123,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                     </div>
                   </div>
                   <div className="text-left sm:text-right">
-                    <p className="text-sm font-bold text-[#0b2f31]">KuDE</p>
+                    <p className="text-sm font-bold text-brand">KuDE</p>
                     <p className="text-[11px] font-semibold uppercase tracking-wide">
                       {isNC ? "Nota de crédito electrónica" : "Factura electrónica"}
                     </p>
@@ -176,7 +176,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                 <div className="mt-4 overflow-hidden rounded-lg border border-border/70">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-[#0b2f31] hover:bg-[#0b2f31]">
+                      <TableRow className="bg-brand hover:bg-brand">
                         <TableHead className="text-[9px] uppercase text-white/80">Descripción</TableHead>
                         <TableHead className="text-center text-[9px] uppercase text-white/80">Cant.</TableHead>
                         <TableHead className="text-right text-[9px] uppercase text-white/80">Precio unit.</TableHead>
@@ -202,7 +202,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                     <div className="flex justify-between"><span className="text-muted-foreground">IVA 10%</span><span className="tabular">{formatGs(invoice.iva10)}</span></div>
                     {invoice.subtotal5 > 0 ? <div className="flex justify-between"><span className="text-muted-foreground">IVA 5%</span><span className="tabular">{formatGs(invoice.iva5)}</span></div> : null}
                     {invoice.exenta > 0 ? <div className="flex justify-between"><span className="text-muted-foreground">Exenta</span><span className="tabular">{formatGs(invoice.exenta)}</span></div> : null}
-                    <div className="flex justify-between border-t border-[#0b2f31] pt-2 text-sm font-bold"><span>Total</span><span className="tabular">{formatGs(invoice.total)}</span></div>
+                    <div className="flex justify-between border-t border-brand pt-2 text-sm font-bold"><span>Total</span><span className="tabular">{formatGs(invoice.total)}</span></div>
                   </div>
                 </div>
                 <p className="mt-3 text-[10px] text-muted-foreground">Son: {numeroALetras(invoice.total)}.</p>

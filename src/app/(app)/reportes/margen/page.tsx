@@ -114,7 +114,7 @@ export default async function MarginReportPage({
       <Card className="mb-4 border-border/80 shadow-none">
         <CardHeader className="border-b border-border/60 px-5 py-3.5"><CardTitle className="text-sm font-semibold">Top 10 por margen</CardTitle></CardHeader>
         <CardContent className="p-4">
-          {chart.length === 0 ? <EmptyState icon={BarChart3} title="Sin ventas" className="border-0 py-8" /> : <SimpleBarChart data={chart} xKey="producto" series={[{ key: "margen", label: "Margen", color: "#84cc16" }]} height={260} />}
+          {chart.length === 0 ? <EmptyState icon={BarChart3} title="Sin ventas" className="border-0 py-8" /> : <SimpleBarChart data={chart} xKey="producto" series={[{ key: "margen", label: "Margen", color: "hsl(var(--chart-4))" }]} height={260} />}
         </CardContent>
       </Card>
 

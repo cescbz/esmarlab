@@ -37,6 +37,11 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 195 25% 20%;
     --sidebar-ring: 174 70% 40%;
+    --brand: 195 40% 12%;
+    --brand-foreground: 0 0% 100%;
+    --brand-muted: 195 30% 18%;
+    --safety: 32 95% 50%;
+    --safety-foreground: 30 40% 12%;
   }
 
   .dark {
@@ -67,6 +72,11 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 195 25% 17%;
     --sidebar-ring: 174 70% 40%;
+    --brand: 195 40% 10%;
+    --brand-foreground: 0 0% 100%;
+    --brand-muted: 195 30% 15%;
+    --safety: 32 95% 52%;
+    --safety-foreground: 30 40% 12%;
   }
 }
 
@@ -76,11 +86,18 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+    text-rendering: optimizeLegibility;
   }
   .tabular {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum", "kern";
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
   }
 }
 

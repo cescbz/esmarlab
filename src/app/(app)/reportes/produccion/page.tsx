@@ -132,7 +132,7 @@ export default async function ProductionReportPage({
       <div className="grid gap-4 lg:grid-cols-2">
         <Card className="border-border/80 shadow-none">
           <CardHeader className="border-b border-border/60 px-5 py-3.5"><CardTitle className="text-sm font-semibold">Unidades terminadas por mes</CardTitle></CardHeader>
-          <CardContent className="p-4"><SimpleBarChart data={chart} xKey="mes" series={[{ key: "unidades", label: "Unidades", color: "#0f766e" }]} height={230} /></CardContent>
+          <CardContent className="p-4"><SimpleBarChart data={chart} xKey="mes" series={[{ key: "unidades", label: "Unidades", color: "hsl(var(--chart-1))" }]} height={230} /></CardContent>
         </Card>
         <Card className="border-border/80 shadow-none">
           <CardHeader className="border-b border-border/60 px-5 py-3.5"><CardTitle className="text-sm font-semibold">Producción por taller</CardTitle></CardHeader>

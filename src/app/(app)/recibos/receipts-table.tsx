@@ -54,8 +54,8 @@ const columns: ColumnDef<ReceiptRow, unknown>[] = [
             <Link href={`/recibos/${row.original.id}`}>Ver recibo</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href={`/api/pdf/recibo/${row.original.id}`} target="_blank" rel="noreferrer">
-              <Download className="mr-2 h-4 w-4" />Descargar PDF
+            <a href={`/ver/recibo/${row.original.id}`} target="_blank" rel="noreferrer">
+              <Download className="mr-2 h-4 w-4" />Abrir PDF
             </a>
           </DropdownMenuItem>
         </DropdownMenuContent>

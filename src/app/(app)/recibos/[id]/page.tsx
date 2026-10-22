@@ -47,10 +47,10 @@ export default async function ReceiptDetailPage({ params }: { params: { id: stri
           <>
             <Button asChild variant="outline"><Link href="/recibos"><ArrowLeft className="mr-1.5 h-4 w-4" />Volver</Link></Button>
             <Button asChild variant="outline">
-              <a href={`/api/pdf/recibo/${receipt.id}`} target="_blank" rel="noreferrer"><Download className="mr-1.5 h-4 w-4" />PDF</a>
+              <a href={`/ver/recibo/${receipt.id}`} target="_blank" rel="noreferrer"><Printer className="mr-1.5 h-4 w-4" />Ver PDF</a>
             </Button>
             <Button asChild>
-              <a href={`/api/pdf/recibo/${receipt.id}`} target="_blank" rel="noreferrer"><Printer className="mr-1.5 h-4 w-4" />Imprimir</a>
+              <a href={`/api/pdf/recibo/${receipt.id}`} target="_blank" rel="noreferrer"><Download className="mr-1.5 h-4 w-4" />Descargar</a>
             </Button>
           </>
         }
@@ -65,15 +65,15 @@ export default async function ReceiptDetailPage({ params }: { params: { id: stri
         <Card className="demo-watermark border-border/80 shadow-none">
           <CardHeader className="flex-row items-start justify-between border-b border-border/60 px-6 py-4">
             <div className="flex gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0b2f31] text-base font-black text-white">E</div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-base font-bold text-white">E</div>
               <div>
-                <p className="text-base font-bold text-[#0b2f31]">{company.razonSocial}</p>
+                <p className="text-base font-bold text-brand">{company.razonSocial}</p>
                 <p className="text-[10px] text-muted-foreground">RUC {company.ruc}-{company.dv} · {company.city}</p>
                 <p className="text-[10px] text-muted-foreground">{company.phone} · {company.email}</p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm font-bold text-[#0b2f31]">RECIBO DE COBRO</p>
+              <p className="text-sm font-bold text-brand">RECIBO DE COBRO</p>
               <p className="font-mono text-sm font-semibold">{receipt.number}</p>
               <p className="text-[10px] text-muted-foreground">{formatDate(receipt.date)}</p>
             </div>
@@ -88,7 +88,7 @@ export default async function ReceiptDetailPage({ params }: { params: { id: stri
             <div className="overflow-hidden rounded-lg border border-border/70">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-[#0b2f31] hover:bg-[#0b2f31]">
+                  <TableRow className="bg-brand hover:bg-brand">
                     <TableHead className="text-[9px] uppercase text-white/80">Factura</TableHead>
                     <TableHead className="text-right text-[9px] uppercase text-white/80">Total factura</TableHead>
                     <TableHead className="text-right text-[9px] uppercase text-white/80">Aplicado</TableHead>

@@ -184,7 +184,7 @@ export default async function DashboardPage() {
             </Link>
           </CardHeader>
           <CardContent className="p-4">
-            <SimpleBarChart data={monthlySales} xKey="mes" series={[{ key: "ventas", label: "Ventas", color: "#0f766e" }]} height={250} />
+            <SimpleBarChart data={monthlySales} xKey="mes" series={[{ key: "ventas", label: "Ventas", color: "hsl(var(--chart-1))" }]} height={250} />
           </CardContent>
         </Card>
 

@@ -247,7 +247,7 @@ export default async function CashPage({
                         <TableCell className={`text-right text-xs tabular ${session.difference ? "font-medium text-red-600" : "text-muted-foreground"}`}>{formatGs(session.difference ?? 0)}</TableCell>
                         <TableCell className="text-right">
                           <Button asChild variant="outline" size="sm" className="h-7 text-xs">
-                            <a href={`/api/pdf/arqueo/${session.id}`}>Arqueo</a>
+                            <a href={`/ver/arqueo/${session.id}`}>Arqueo</a>
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -396,7 +396,7 @@ export default async function CashPage({
           {closedSessions.slice(0, 4).map((session) => (
             <a
               key={session.id}
-              href={`/api/pdf/arqueo/${session.id}`}
+              href={`/ver/arqueo/${session.id}`}
               className="flex items-center gap-1 text-xs text-primary hover:underline"
             >
               <FileText className="h-3 w-3" />

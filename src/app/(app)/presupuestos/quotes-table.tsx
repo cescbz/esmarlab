@@ -54,8 +54,8 @@ const columns: ColumnDef<QuoteRow, unknown>[] = [
             <Link href={`/presupuestos/${row.original.id}`}><Eye className="mr-2 h-4 w-4" />Ver detalle</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href={`/api/pdf/presupuesto/${row.original.id}`} target="_blank" rel="noreferrer">
-              <Download className="mr-2 h-4 w-4" />Descargar PDF
+            <a href={`/ver/presupuesto/${row.original.id}`} target="_blank" rel="noreferrer">
+              <Download className="mr-2 h-4 w-4" />Abrir PDF
             </a>
           </DropdownMenuItem>
         </DropdownMenuContent>

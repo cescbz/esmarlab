@@ -37,7 +37,7 @@ export function CloseCashForm({
         return;
       }
       toast.success("Caja cerrada. Descargando arqueo…");
-      window.open(`/api/pdf/arqueo/${sessionId}`, "_blank");
+      window.open(`/ver/arqueo/${sessionId}`, "_blank");
       router.refresh();
     });
   }

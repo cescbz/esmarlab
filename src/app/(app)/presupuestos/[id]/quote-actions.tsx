@@ -83,8 +83,8 @@ export function QuoteActions({
         </Button>
       ) : null}
       <Button asChild variant="outline">
-        <a href={`/api/pdf/presupuesto/${quoteId}`} target="_blank" rel="noreferrer">
-          <Download className="mr-1.5 h-4 w-4" />PDF
+        <a href={`/ver/presupuesto/${quoteId}`} target="_blank" rel="noreferrer">
+          <Download className="mr-1.5 h-4 w-4" />Ver PDF
         </a>
       </Button>
       {canApprove ? (

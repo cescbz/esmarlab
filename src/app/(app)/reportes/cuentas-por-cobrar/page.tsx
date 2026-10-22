@@ -128,7 +128,7 @@ export default async function ReceivablesReportPage({
       <Card className="mb-4 border-border/80 shadow-none">
         <CardHeader className="border-b border-border/60 px-5 py-3.5"><CardTitle className="text-sm font-semibold">Distribución por antigüedad</CardTitle></CardHeader>
         <CardContent className="p-4">
-          <SimpleBarChart data={chart} xKey="tramo" series={[{ key: "total", label: "Saldo", color: "#f59e0b" }]} height={220} />
+          <SimpleBarChart data={chart} xKey="tramo" series={[{ key: "total", label: "Saldo", color: "hsl(var(--chart-2))" }]} height={220} />
         </CardContent>
       </Card>
 

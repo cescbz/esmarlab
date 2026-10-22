@@ -40,6 +40,7 @@
     "lucide-react": "^0.468.0",
     "next": "14.2.33",
     "next-auth": "^5.0.0-beta.25",
+    "pdfjs-dist": "^4.10.38",
     "prisma": "^5.22.0",
     "qrcode": "^1.5.4",
     "react": "^18",

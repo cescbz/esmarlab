@@ -15,7 +15,7 @@ import {
 } from "recharts";
 import { formatGs } from "@/lib/format";
 
-const COLORS = ["#0f766e", "#f59e0b", "#0ea5e9", "#84cc16", "#8b5cf6", "#ef4444", "#14b8a6", "#64748b"];
+const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))", "hsl(var(--destructive))", "hsl(var(--chart-1))", "hsl(var(--muted-foreground))"];
 
 export function SimpleBarChart({
   data,
@@ -33,9 +33,9 @@ export function SimpleBarChart({
       <ResponsiveContainer>
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-          <XAxis dataKey={xKey} tick={{ fontSize: 10, fill: "#64748b" }} axisLine={false} tickLine={false} />
+          <XAxis dataKey={xKey} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
           <YAxis
-            tick={{ fontSize: 10, fill: "#64748b" }}
+            tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
             axisLine={false}
             tickLine={false}
             width={58}

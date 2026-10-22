@@ -257,7 +257,7 @@ function Brand({ collapsed }: { collapsed: boolean }) {
       )}
     >
       <Link href="/" className="flex items-center gap-2.5">
-        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-black text-[#0b2f31]">
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-sm font-bold text-brand">
           E
           <span className="absolute bottom-1.5 right-1.5 h-1 w-1 rounded-full bg-amber-500" />
         </div>

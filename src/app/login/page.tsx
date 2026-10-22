@@ -12,8 +12,8 @@ export default async function LoginPage() {
   if (session?.user) redirect("/");
 
   return (
-    <div className="min-h-svh bg-[#f4f6f7] lg:grid lg:grid-cols-[1.05fr_1fr]">
-      <section className="relative hidden overflow-hidden bg-[#0b2f31] px-12 py-14 text-white lg:flex lg:flex-col lg:justify-between xl:px-20">
+    <div className="min-h-svh bg-background lg:grid lg:grid-cols-[1.05fr_1fr]">
+      <section className="relative hidden overflow-hidden bg-brand px-12 py-14 text-white lg:flex lg:flex-col lg:justify-between xl:px-20">
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.13]"
           style={{
@@ -22,12 +22,12 @@ export default async function LoginPage() {
             backgroundSize: "44px 44px",
           }}
         />
-        <div className="pointer-events-none absolute -right-28 -top-32 h-96 w-96 rounded-full bg-[#0f766e] blur-3xl" />
+        <div className="pointer-events-none absolute -right-28 -top-32 h-96 w-96 rounded-full bg-primary blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-amber-500/20 blur-3xl" />
 
         <div className="relative">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-lg font-black tracking-tight text-[#0b2f31] shadow-lg">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-lg font-bold tracking-tight text-brand shadow-lg">
               E
               <span className="ml-0.5 mt-2 h-1.5 w-1.5 rounded-full bg-amber-500" />
             </div>
@@ -82,11 +82,11 @@ export default async function LoginPage() {
       <section className="flex min-h-svh items-center justify-center px-5 py-10 sm:px-8">
         <div className="w-full max-w-md">
           <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0b2f31] text-base font-black text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-base font-bold text-white">
               E
             </div>
             <div>
-              <p className="font-bold leading-none text-[#0b2f31]">ESMAR SRL</p>
+              <p className="font-bold leading-none text-brand">ESMAR SRL</p>
               <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                 Sistema de gestión
               </p>

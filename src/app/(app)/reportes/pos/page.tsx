@@ -90,7 +90,7 @@ export default async function PosReportPage({
           {chart.length === 0 ? (
             <EmptyState icon={CreditCard} title="Sin operaciones POS" className="border-0 py-8" />
           ) : (
-            <SimpleBarChart data={chart} xKey="terminal" series={[{ key: "total", label: "Total", color: "#0ea5e9" }]} height={230} />
+            <SimpleBarChart data={chart} xKey="terminal" series={[{ key: "total", label: "Total", color: "hsl(var(--chart-3))" }]} height={230} />
           )}
         </CardContent>
       </Card>

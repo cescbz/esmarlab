@@ -111,13 +111,13 @@ export function InvoiceActions({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <a href={`/api/pdf/kude/${invoiceId}?formato=a4`} target="_blank" rel="noreferrer">
-              <FileDown className="mr-2 h-4 w-4" />KuDE A4
+            <a href={`/ver/kude/${invoiceId}?formato=a4`} target="_blank" rel="noreferrer">
+              <FileDown className="mr-2 h-4 w-4" />Abrir KuDE A4
             </a>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href={`/api/pdf/kude/${invoiceId}?formato=ticket`} target="_blank" rel="noreferrer">
-              <Printer className="mr-2 h-4 w-4" />Ticket 80 mm
+            <a href={`/ver/kude/${invoiceId}?formato=ticket`} target="_blank" rel="noreferrer">
+              <Printer className="mr-2 h-4 w-4" />Abrir ticket 80 mm
             </a>
           </DropdownMenuItem>
         </DropdownMenuContent>

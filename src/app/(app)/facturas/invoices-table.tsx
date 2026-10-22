@@ -87,8 +87,8 @@ const columns: ColumnDef<InvoiceRow, unknown>[] = [
             </DropdownMenuItem>
             {row.original.type === "FACTURA" ? (
               <DropdownMenuItem asChild>
-                <a href={`/api/pdf/kude/${row.original.id}?formato=a4`} target="_blank" rel="noreferrer">
-                  <Download className="mr-2 h-4 w-4" />Descargar KuDE
+                <a href={`/ver/kude/${row.original.id}?formato=a4`} target="_blank" rel="noreferrer">
+                  <Download className="mr-2 h-4 w-4" />Abrir KuDE
                 </a>
               </DropdownMenuItem>
             ) : null}

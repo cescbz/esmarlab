@@ -138,8 +138,8 @@ export default async function CashReportPage({
               data={chart}
               xKey="sesion"
               series={[
-                { key: "ingresos", label: "Ingresos", color: "#0f766e" },
-                { key: "egresos", label: "Egresos", color: "#ef4444" },
+                { key: "ingresos", label: "Ingresos", color: "hsl(var(--chart-1))" },
+                { key: "egresos", label: "Egresos", color: "hsl(var(--destructive))" },
               ]}
               height={250}
             />

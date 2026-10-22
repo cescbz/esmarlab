@@ -102,6 +102,7 @@ export function canAccess(role: AppRole, pathname: string): boolean {
   if (role === "ADMIN") return true;
   if (pathname === "/") return true;
   if (pathname.startsWith("/api/pdf")) return true;
+  if (pathname.startsWith("/ver/")) return true;
 
   const entry = ACCESS.find((item) => pathname.startsWith(item.prefix));
   if (entry) return entry.roles.includes(role);
