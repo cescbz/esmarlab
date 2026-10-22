@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createProductionOrder } from "@/actions/production";
+import { DatePicker } from "@/components/ui/date-picker";
 import { addDays, formatDate, toDateInputValue } from "@/lib/format";
 
 type ProductOption = {
@@ -197,7 +198,11 @@ export function ProductionForm({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="dueDate">Fecha compromiso</Label>
-              <Input id="dueDate" type="date" {...register("dueDate")} />
+              <Controller
+                control={control}
+                name="dueDate"
+                render={({ field }) => <DatePicker value={field.value} onChange={field.onChange} />}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Prioridad</Label>

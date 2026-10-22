@@ -28,22 +28,33 @@ import {
 import { DataTable } from "@/components/shared/data-table";
 import { formatGs } from "@/lib/format";
 import { setCustomerActive } from "@/actions/customers";
+import { CustomerFormModal } from "./customer-form-modal";
+
+export type PriceListOption = { id: string; name: string };
 
 export type CustomerRow = {
   id: string;
   name: string;
   type: string;
   ruc: string;
+  rucBase: string;
+  dv: string;
+  address: string | null;
   city: string;
+  phone: string | null;
+  email: string | null;
   priceList: string;
+  priceListId: string;
   saldo: number;
   creditLimit: number;
+  termDays: number;
   active: boolean;
 };
 
-function CustomerActions({ customer }: { customer: CustomerRow }) {
+function CustomerActions({ customer, priceLists }: { customer: CustomerRow; priceLists: PriceListOption[] }) {
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   function toggle() {
@@ -74,11 +85,14 @@ function CustomerActions({ customer }: { customer: CustomerRow }) {
               Ver ficha
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/clientes/${customer.id}/editar`}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Editar
-            </Link>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+              setEditOpen(true);
+            }}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            Editar
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -94,6 +108,27 @@ function CustomerActions({ customer }: { customer: CustomerRow }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <CustomerFormModal
+        priceLists={priceLists}
+        customer={{
+          id: customer.id,
+          type: customer.type as "PERSONA_FISICA" | "PERSONA_JURIDICA",
+          name: customer.name,
+          rucBase: customer.rucBase,
+          dv: customer.dv,
+          address: customer.address,
+          city: customer.city,
+          phone: customer.phone,
+          email: customer.email,
+          priceListId: customer.priceListId,
+          creditLimit: customer.creditLimit,
+          termDays: customer.termDays,
+          active: customer.active,
+        }}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
@@ -115,7 +150,8 @@ function CustomerActions({ customer }: { customer: CustomerRow }) {
   );
 }
 
-const columns: ColumnDef<CustomerRow, unknown>[] = [
+function buildColumns(priceLists: PriceListOption[]): ColumnDef<CustomerRow, unknown>[] {
+  return [
   {
     accessorKey: "name",
     header: "Cliente",
@@ -177,13 +213,23 @@ const columns: ColumnDef<CustomerRow, unknown>[] = [
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <CustomerActions customer={row.original} />
+        <CustomerActions customer={row.original} priceLists={priceLists} />
       </div>
     ),
   },
-];
+  ];
+}
 
-export function CustomersTable({ data, toolbar }: { data: CustomerRow[]; toolbar?: React.ReactNode }) {
+export function CustomersTable({
+  data,
+  priceLists,
+  toolbar,
+}: {
+  data: CustomerRow[];
+  priceLists: PriceListOption[];
+  toolbar?: React.ReactNode;
+}) {
+  const columns = buildColumns(priceLists);
   return (
     <DataTable
       data={data}

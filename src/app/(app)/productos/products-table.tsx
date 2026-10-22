@@ -28,6 +28,7 @@ import {
 import { DataTable } from "@/components/shared/data-table";
 import { formatGs, formatNumber } from "@/lib/format";
 import { setProductActive } from "@/actions/products";
+import { ProductFormModal } from "./product-form-modal";
 
 export type ProductRow = {
   id: string;
@@ -41,6 +42,10 @@ export type ProductRow = {
   minStock: number;
   variants: number;
   active: boolean;
+  groupId: string;
+  taxRate: number;
+  cost: number;
+  variantsData: { id: string; size: string; color: string; sku: string; priceOverride: number | null }[];
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -57,9 +62,10 @@ const TYPE_CLASS: Record<string, string> = {
   MATERIA_PRIMA: "border-amber-200 bg-amber-50 text-amber-700",
 };
 
-function ProductActions({ product }: { product: ProductRow }) {
+function ProductActions({ product, groups }: { product: ProductRow; groups: { id: string; name: string }[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   function toggle() {
@@ -90,11 +96,14 @@ function ProductActions({ product }: { product: ProductRow }) {
               Ver ficha
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/productos/${product.id}/editar`}>
-              <Pencil className="mr-2 h-4 w-4" />
-              Editar
-            </Link>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+              setEditOpen(true);
+            }}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            Editar
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -110,6 +119,26 @@ function ProductActions({ product }: { product: ProductRow }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ProductFormModal
+        groups={groups}
+        product={{
+          id: product.id,
+          code: product.code,
+          name: product.name,
+          groupId: product.groupId,
+          type: product.type as "FABRICADO" | "REVENTA_LOCAL" | "REVENTA_IMPORTADO" | "MATERIA_PRIMA",
+          unit: product.unit as "UN" | "PAR" | "DOC" | "MT" | "KG",
+          taxRate: product.taxRate,
+          cost: product.cost,
+          basePrice: product.basePrice,
+          minStock: product.minStock,
+          active: product.active,
+          variants: product.variantsData,
+        }}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
@@ -129,7 +158,8 @@ function ProductActions({ product }: { product: ProductRow }) {
   );
 }
 
-const columns: ColumnDef<ProductRow, unknown>[] = [
+function buildColumns(groups: { id: string; name: string }[]): ColumnDef<ProductRow, unknown>[] {
+  return [
   {
     accessorKey: "name",
     header: "Producto",
@@ -202,13 +232,23 @@ const columns: ColumnDef<ProductRow, unknown>[] = [
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex justify-end">
-        <ProductActions product={row.original} />
+        <ProductActions product={row.original} groups={groups} />
       </div>
     ),
   },
-];
+  ];
+}
 
-export function ProductsTable({ data, toolbar }: { data: ProductRow[]; toolbar?: React.ReactNode }) {
+export function ProductsTable({
+  data,
+  groups,
+  toolbar,
+}: {
+  data: ProductRow[];
+  groups: { id: string; name: string }[];
+  toolbar?: React.ReactNode;
+}) {
+  const columns = buildColumns(groups);
   return (
     <DataTable
       data={data}

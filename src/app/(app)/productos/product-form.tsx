@@ -47,9 +47,13 @@ const TYPE_OPTIONS = [
 export function ProductForm({
   groups,
   product,
+  onSaved,
+  onCancel,
 }: {
   groups: { id: string; name: string }[];
   product?: ProductForForm;
+  onSaved?: (id?: string) => void;
+  onCancel?: () => void;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -112,8 +116,12 @@ export function ProductForm({
         return;
       }
       toast.success(product ? "Producto actualizado." : "Producto creado.");
-      router.push(`/productos/${result.id}`);
       router.refresh();
+      if (onSaved) {
+        onSaved(result.id);
+        return;
+      }
+      router.push(`/productos/${result.id}`);
     });
   }
 
@@ -315,7 +323,7 @@ export function ProductForm({
           </div>
         ) : null}
         <div className="flex items-center justify-end gap-2">
-          <Button type="button" variant="outline" onClick={() => router.back()} disabled={pending}>
+          <Button type="button" variant="outline" onClick={() => (onCancel ? onCancel() : router.back())} disabled={pending}>
             <X className="mr-1.5 h-4 w-4" />
             Cancelar
           </Button>

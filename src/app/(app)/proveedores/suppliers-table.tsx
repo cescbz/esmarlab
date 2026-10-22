@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { type ColumnDef } from "@tanstack/react-table";
@@ -27,13 +26,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { DataTable } from "@/components/shared/data-table";
 import { setSupplierActive } from "@/actions/suppliers";
+import { SupplierFormModal } from "./supplier-form-modal";
 
 export type SupplierRow = {
   id: string;
   name: string;
   ruc: string;
   contactName: string;
+  contactNameRaw: string;
   phone: string;
+  phoneRaw: string;
+  email: string | null;
+  rucBase: string;
+  dv: string;
   origin: string;
   active: boolean;
 };
@@ -41,6 +46,7 @@ export type SupplierRow = {
 function Actions({ supplier }: { supplier: SupplierRow }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   function toggle() {
@@ -63,8 +69,13 @@ function Actions({ supplier }: { supplier: SupplierRow }) {
           <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-4 w-4" /></Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link href={`/proveedores/${supplier.id}/editar`}><Pencil className="mr-2 h-4 w-4" />Editar</Link>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+              setEditOpen(true);
+            }}
+          >
+            <Pencil className="mr-2 h-4 w-4" />Editar
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -80,6 +91,22 @@ function Actions({ supplier }: { supplier: SupplierRow }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <SupplierFormModal
+        supplier={{
+          id: supplier.id,
+          name: supplier.name,
+          rucBase: supplier.rucBase,
+          dv: supplier.dv,
+          contactName: supplier.contactNameRaw,
+          phone: supplier.phoneRaw,
+          email: supplier.email,
+          origin: supplier.origin as "LOCAL" | "IMPORTADO",
+          active: supplier.active,
+        }}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
@@ -101,11 +128,7 @@ const columns: ColumnDef<SupplierRow, unknown>[] = [
   {
     accessorKey: "name",
     header: "Proveedor",
-    cell: ({ row }) => (
-      <Link href={`/proveedores/${row.original.id}/editar`} className="font-medium hover:text-primary hover:underline">
-        {row.original.name}
-      </Link>
-    ),
+    cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
   },
   { accessorKey: "ruc", header: "RUC", cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span> },
   { accessorKey: "contactName", header: "Contacto" },

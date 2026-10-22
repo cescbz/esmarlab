@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -25,11 +25,11 @@ export function ExpenseFilters({ categories }: { categories: { id: string; name:
     <div className="flex flex-wrap items-end gap-2">
       <div className="space-y-1">
         <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Desde</label>
-        <Input type="date" defaultValue={searchParams.get("desde") ?? ""} onChange={(event) => update("desde", event.target.value)} className="h-9 w-[145px] bg-white text-xs" />
+        <DatePicker value={searchParams.get("desde") ?? ""} onChange={(value) => update("desde", value)} className="w-[145px]" />
       </div>
       <div className="space-y-1">
         <label className="text-[10px] uppercase tracking-wide text-muted-foreground">Hasta</label>
-        <Input type="date" defaultValue={searchParams.get("hasta") ?? ""} onChange={(event) => update("hasta", event.target.value)} className="h-9 w-[145px] bg-white text-xs" />
+        <DatePicker value={searchParams.get("hasta") ?? ""} onChange={(value) => update("hasta", value)} className="w-[145px]" />
       </div>
       <Select value={searchParams.get("categoria") ?? "todas"} onValueChange={(value) => update("categoria", value === "todas" ? "" : value)}>
         <SelectTrigger className="h-9 w-[220px] bg-white text-xs"><SelectValue placeholder="Categoría" /></SelectTrigger>

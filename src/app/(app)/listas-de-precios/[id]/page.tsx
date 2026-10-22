@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PriceListItemsTable, type PriceItemRow } from "../price-list-items-table";
+import { PriceListFormModal } from "../price-list-form-modal";
 
 export const metadata: Metadata = { title: "Lista de precios" };
 
@@ -44,9 +45,17 @@ export default async function PriceListDetailPage({ params }: { params: { id: st
             <Button asChild variant="outline">
               <Link href="/listas-de-precios"><ArrowLeft className="mr-1.5 h-4 w-4" />Volver</Link>
             </Button>
-            <Button asChild>
-              <Link href={`/listas-de-precios/${list.id}/editar`}><Pencil className="mr-1.5 h-4 w-4" />Editar</Link>
-            </Button>
+            <PriceListFormModal
+              list={{
+                id: list.id,
+                name: list.name,
+                description: list.description,
+                discountPercent: discount,
+                isDefault: list.isDefault,
+                active: list.active,
+              }}
+              trigger={<Button><Pencil className="mr-1.5 h-4 w-4" />Editar</Button>}
+            />
           </>
         }
       />

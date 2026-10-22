@@ -29,6 +29,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VariantPicker, type PickerProduct } from "@/components/shared/variant-picker";
+import { DatePicker } from "@/components/ui/date-picker";
 import { quoteSchema, type QuoteFormValues } from "@/lib/validators/quote";
 import { saveQuote } from "@/actions/quotes";
 import { calcInvoiceTotals, formatRuc } from "@/lib/fiscal";
@@ -274,7 +275,13 @@ export function QuoteForm({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="date">Fecha</Label>
-              <Input id="date" type="date" {...register("date")} disabled={readOnly} />
+              <Controller
+                control={control}
+                name="date"
+                render={({ field }) => (
+                  <DatePicker value={field.value} onChange={field.onChange} disabled={readOnly} />
+                )}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Validez</Label>

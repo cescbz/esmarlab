@@ -33,13 +33,15 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { formatDate, formatGs } from "@/lib/format";
 import { formatRuc } from "@/lib/fiscal";
+import { CustomerFormModal } from "../customer-form-modal";
 
 export const metadata: Metadata = { title: "Ficha de cliente" };
 
 export default async function CustomerDetailPage({ params }: { params: { id: string } }) {
-  const customer = await prisma.customer.findUnique({
-    where: { id: params.id },
-    include: {
+  const [customer, priceLists] = await Promise.all([
+    prisma.customer.findUnique({
+      where: { id: params.id },
+      include: {
       priceList: true,
       invoices: {
         where: { type: "FACTURA" },
@@ -52,8 +54,10 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
       },
       orders: { orderBy: { date: "desc" }, include: { lines: true } },
       quotes: { orderBy: { date: "desc" }, include: { lines: true } },
-    },
-  });
+      },
+    }),
+    prisma.priceList.findMany({ where: { active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+  ]);
   if (!customer) notFound();
 
   const totalFacturado = customer.invoices.reduce((sum, invoice) => sum + invoice.total, 0);
@@ -88,12 +92,25 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                 Volver
               </Link>
             </Button>
-            <Button asChild>
-              <Link href={`/clientes/${customer.id}/editar`}>
-                <Pencil className="mr-1.5 h-4 w-4" />
-                Editar
-              </Link>
-            </Button>
+            <CustomerFormModal
+              priceLists={priceLists}
+              customer={{
+                id: customer.id,
+                type: customer.type,
+                name: customer.name,
+                rucBase: customer.rucBase,
+                dv: customer.dv,
+                address: customer.address,
+                city: customer.city,
+                phone: customer.phone,
+                email: customer.email,
+                priceListId: customer.priceListId,
+                creditLimit: customer.creditLimit,
+                termDays: customer.termDays,
+                active: customer.active,
+              }}
+              trigger={<Button><Pencil className="mr-1.5 h-4 w-4" />Editar</Button>}
+            />
           </>
         }
       />

@@ -15,6 +15,27 @@ export function formatGs(value: number | string | bigint | null | undefined): st
   return `Gs. ${gsFormatter.format(n)}`;
 }
 
+export function formatGsCompact(value: number | string | bigint | null | undefined): string {
+  const n = toNumber(value);
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000_000) {
+    return `Gs. ${(n / 1_000_000_000).toLocaleString("es-PY", {
+      maximumFractionDigits: 1,
+    })} mil M`;
+  }
+  if (abs >= 1_000_000) {
+    return `Gs. ${(n / 1_000_000).toLocaleString("es-PY", {
+      maximumFractionDigits: 1,
+    })} M`;
+  }
+  if (abs >= 100_000) {
+    return `Gs. ${(n / 1000).toLocaleString("es-PY", {
+      maximumFractionDigits: 0,
+    })} mil`;
+  }
+  return formatGs(n);
+}
+
 export function formatNumber(value: number | string | bigint | null | undefined): string {
   return numberFormatter.format(toNumber(value));
 }

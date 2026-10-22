@@ -24,6 +24,8 @@ import { saveCustomer } from "@/actions/customers";
 
 type Props = {
   priceLists: { id: string; name: string }[];
+  onSaved?: (id?: string) => void;
+  onCancel?: () => void;
   customer?: {
     id: string;
     type: "PERSONA_FISICA" | "PERSONA_JURIDICA";
@@ -41,7 +43,7 @@ type Props = {
   };
 };
 
-export function CustomerForm({ priceLists, customer }: Props) {
+export function CustomerForm({ priceLists, customer, onSaved, onCancel }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [serverError, setServerError] = useState("");
@@ -107,8 +109,12 @@ export function CustomerForm({ priceLists, customer }: Props) {
         return;
       }
       toast.success(customer ? "Cliente actualizado." : "Cliente creado.");
-      router.push(`/clientes/${result.id}`);
       router.refresh();
+      if (onSaved) {
+        onSaved(result.id);
+        return;
+      }
+      router.push(`/clientes/${result.id}`);
     });
   }
 
@@ -270,7 +276,7 @@ export function CustomerForm({ priceLists, customer }: Props) {
       ) : null}
 
       <div className="flex items-center justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()} disabled={pending}>
+        <Button type="button" variant="outline" onClick={() => (onCancel ? onCancel() : router.back())} disabled={pending}>
           <X className="mr-1.5 h-4 w-4" />
           Cancelar
         </Button>

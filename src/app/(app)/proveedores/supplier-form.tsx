@@ -24,7 +24,11 @@ import { calculateDV, formatRuc } from "@/lib/fiscal";
 
 export function SupplierForm({
   supplier,
+  onSaved,
+  onCancel,
 }: {
+  onSaved?: (id?: string) => void;
+  onCancel?: () => void;
   supplier?: {
     id: string;
     name: string;
@@ -91,8 +95,12 @@ export function SupplierForm({
         return;
       }
       toast.success(supplier ? "Proveedor actualizado." : "Proveedor creado.");
-      router.push("/proveedores");
       router.refresh();
+      if (onSaved) {
+        onSaved(result.id);
+        return;
+      }
+      router.push("/proveedores");
     });
   }
 
@@ -164,7 +172,7 @@ export function SupplierForm({
       ) : null}
 
       <div className="flex items-center justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()} disabled={pending}>
+        <Button type="button" variant="outline" onClick={() => (onCancel ? onCancel() : router.back())} disabled={pending}>
           <X className="mr-1.5 h-4 w-4" />Cancelar
         </Button>
         <Button type="submit" disabled={pending}>

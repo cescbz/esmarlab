@@ -16,7 +16,11 @@ import { savePriceList } from "@/actions/price-lists";
 
 export function PriceListForm({
   list,
+  onSaved,
+  onCancel,
 }: {
+  onSaved?: (id?: string) => void;
+  onCancel?: () => void;
   list?: {
     id: string;
     name: string;
@@ -52,8 +56,12 @@ export function PriceListForm({
         return;
       }
       toast.success(list ? "Lista actualizada." : "Lista creada.");
-      router.push(`/listas-de-precios/${result.id}`);
       router.refresh();
+      if (onSaved) {
+        onSaved(result.id);
+        return;
+      }
+      router.push(`/listas-de-precios/${result.id}`);
     });
   }
 
@@ -110,7 +118,7 @@ export function PriceListForm({
       ) : null}
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()} disabled={pending}>
+        <Button type="button" variant="outline" onClick={() => (onCancel ? onCancel() : router.back())} disabled={pending}>
           <X className="mr-1.5 h-4 w-4" />Cancelar
         </Button>
         <Button type="submit" disabled={pending}>

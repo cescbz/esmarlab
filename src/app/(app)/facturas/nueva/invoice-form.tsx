@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DatePicker } from "@/components/ui/date-picker";
 import { calcInvoiceTotals } from "@/lib/fiscal";
 import { formatGs, toDateInputValue } from "@/lib/format";
 import { createInvoiceFromOrder } from "@/actions/invoices";
@@ -146,7 +147,11 @@ export function InvoiceForm({
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="date">Fecha de emisión</Label>
-              <Input id="date" type="date" {...register("date")} />
+              <Controller
+                control={control}
+                name="date"
+                render={({ field }) => <DatePicker value={field.value} onChange={field.onChange} />}
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Condición de venta</Label>

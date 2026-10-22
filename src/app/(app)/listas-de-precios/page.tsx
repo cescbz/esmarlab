@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ArrowRight, Plus, Star, Tags } from "lucide-react";
+import { PriceListFormModal } from "./price-list-form-modal";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Listas de precios" };
 export default async function PriceListsPage() {
   const lists = await prisma.priceList.findMany({
     orderBy: [{ isDefault: "desc" }, { name: "asc" }],
-    include: { _count: { select: { items: true, customers: true } } },
+    include: { _count: { select: { items: true, customers: true } }, items: { take: 1, select: { discountPercent: true } } },
   });
 
   return (
@@ -20,7 +20,7 @@ export default async function PriceListsPage() {
       <PageHeader
         title="Listas de precios"
         description="Precios diferenciados por tipo de cliente. Los precios se cargan con IVA incluido."
-        actions={<Button asChild><Link href="/listas-de-precios/nueva"><Plus className="mr-1.5 h-4 w-4" />Nueva lista</Link></Button>}
+        actions={<PriceListFormModal trigger={<Button><Plus className="mr-1.5 h-4 w-4" />Nueva lista</Button>} />}
       />
 
       {lists.length === 0 ? (
@@ -28,6 +28,7 @@ export default async function PriceListsPage() {
           <Tags className="mx-auto h-6 w-6 text-muted-foreground" />
           <p className="mt-3 text-sm font-semibold">No hay listas de precios</p>
           <p className="mt-1 text-xs text-muted-foreground">Creá la primera lista para asignar a tus clientes.</p>
+          <PriceListFormModal trigger={<Button className="mt-4">Nueva lista</Button>} />
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -63,13 +64,21 @@ export default async function PriceListsPage() {
                 </div>
 
                 <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+                  <PriceListFormModal
+                    list={{
+                      id: list.id,
+                      name: list.name,
+                      description: list.description,
+                      discountPercent: list.items[0]?.discountPercent ?? 0,
+                      isDefault: list.isDefault,
+                      active: list.active,
+                    }}
+                    trigger={<Button variant="outline" size="sm" className="h-7 px-2 text-xs">Editar</Button>}
+                  />
                   <Button asChild variant="ghost" size="sm" className="h-7 px-2 text-xs">
-                    <Link href={`/listas-de-precios/${list.id}`}>
+                    <a href={`/listas-de-precios/${list.id}`}>
                       Ver precios <ArrowRight className="ml-1 h-3 w-3" />
-                    </Link>
-                  </Button>
-                  <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-                    <Link href={`/listas-de-precios/${list.id}/editar`}>Editar</Link>
+                    </a>
                   </Button>
                 </div>
               </CardContent>

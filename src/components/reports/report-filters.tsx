@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -32,11 +32,10 @@ export function ReportFilters({ fields }: { fields: ReportFilterField[] }) {
         field.type === "date" ? (
           <div key={field.name} className="space-y-1">
             <label className="text-[10px] uppercase tracking-wide text-muted-foreground">{field.label}</label>
-            <Input
-              type="date"
-              defaultValue={searchParams.get(field.name) ?? ""}
-              onChange={(event) => update(field.name, event.target.value)}
-              className="h-9 w-[150px] bg-white text-xs"
+            <DatePicker
+              value={searchParams.get(field.name) ?? ""}
+              onChange={(value) => update(field.name, value)}
+              className="w-[150px]"
             />
           </div>
         ) : (

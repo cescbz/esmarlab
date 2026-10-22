@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createShipment } from "@/actions/orders";
+import { DatePicker } from "@/components/ui/date-picker";
 import { toDateInputValue } from "@/lib/format";
 
 type ShipmentLine = {
@@ -112,7 +113,11 @@ export function ShipmentForm({
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="date">Fecha</Label>
-            <Input id="date" type="date" {...register("date")} />
+            <Controller
+              control={control}
+              name="date"
+              render={({ field }) => <DatePicker value={field.value} onChange={field.onChange} />}
+            />
           </div>
           <div className="space-y-1.5">
             <Label>Depósito de salida (referencia)</Label>

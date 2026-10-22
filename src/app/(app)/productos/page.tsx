@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Boxes, Plus } from "lucide-react";
 import { ProductType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -7,6 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { FilterSelect } from "@/components/shared/filter-select";
 import { Button } from "@/components/ui/button";
 import { ProductsTable, type ProductRow } from "./products-table";
+import { ProductFormModal } from "./product-form-modal";
 
 export const metadata: Metadata = { title: "Productos" };
 
@@ -28,7 +28,16 @@ export default async function ProductsPage({
       },
       include: {
         group: { select: { name: true } },
-        variants: { select: { id: true, stockLevels: { select: { quantity: true } } } },
+        variants: {
+          select: {
+            id: true,
+            size: true,
+            color: true,
+            sku: true,
+            priceOverride: true,
+            stockLevels: { select: { quantity: true } },
+          },
+        },
       },
       orderBy: [{ type: "asc" }, { name: "asc" }],
     }),
@@ -50,6 +59,16 @@ export default async function ProductsPage({
     minStock: product.minStock,
     variants: product.variants.length,
     active: product.active,
+    groupId: product.groupId,
+    taxRate: product.taxRate,
+    cost: product.cost,
+    variantsData: product.variants.map((variant) => ({
+      id: variant.id,
+      size: variant.size,
+      color: variant.color,
+      sku: variant.sku,
+      priceOverride: variant.priceOverride,
+    })),
   }));
 
   const lowCount = rows.filter((row) => row.stock < row.minStock).length;
@@ -60,12 +79,10 @@ export default async function ProductsPage({
         title="Productos"
         description="Catálogo de uniformes, calzado, EPP y materia prima. Los precios se cargan con IVA incluido."
         actions={
-          <Button asChild>
-            <Link href="/productos/nuevo">
-              <Plus className="mr-1.5 h-4 w-4" />
-              Nuevo producto
-            </Link>
-          </Button>
+          <ProductFormModal
+            groups={groups}
+            trigger={<Button><Plus className="mr-1.5 h-4 w-4" />Nuevo producto</Button>}
+          />
         }
       />
 
@@ -89,11 +106,12 @@ export default async function ProductsPage({
           <Boxes className="mx-auto h-6 w-6 text-muted-foreground" />
           <p className="mt-3 text-sm font-semibold">No hay productos</p>
           <p className="mt-1 text-xs text-muted-foreground">Creá el primer producto del catálogo.</p>
-          <Button asChild className="mt-4"><Link href="/productos/nuevo">Nuevo producto</Link></Button>
+          <ProductFormModal groups={groups} trigger={<Button className="mt-4">Nuevo producto</Button>} />
         </div>
       ) : (
         <ProductsTable
           data={rows}
+          groups={groups}
           toolbar={
             <>
               <FilterSelect

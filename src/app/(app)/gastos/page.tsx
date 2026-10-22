@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Plus } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatDate, formatGs } from "@/lib/format";
 import { ExpenseFilters } from "./expense-filters";
 import { ExpensesTable, type ExpenseRow } from "./expenses-table";
+import { ExpenseFormModal } from "./expense-form-modal";
 
 export const metadata: Metadata = { title: "Gastos" };
 
@@ -15,7 +15,12 @@ export default async function ExpensesPage({
 }: {
   searchParams: { desde?: string; hasta?: string; categoria?: string };
 }) {
-  const categories = await prisma.expenseCategory.findMany({ where: { active: true }, orderBy: { name: "asc" } });
+  const [categories, suppliers, methods, openSession] = await Promise.all([
+    prisma.expenseCategory.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
+    prisma.supplier.findMany({ where: { active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.paymentMethod.findMany({ where: { active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
+    prisma.cashSession.findFirst({ where: { status: "ABIERTA" }, orderBy: { openedAt: "desc" } }),
+  ]);
   const desde = searchParams.desde ? new Date(`${searchParams.desde}T00:00:00-03:00`) : undefined;
   const hasta = searchParams.hasta ? new Date(`${searchParams.hasta}T23:59:59-03:00`) : undefined;
 
@@ -53,7 +58,16 @@ export default async function ExpensesPage({
       <PageHeader
         title="Gastos"
         description="Gastos operativos pagados desde caja o banco. Se descuentan de la sesión de caja cuando corresponde."
-        actions={<Button asChild><Link href="/gastos/nuevo"><Plus className="mr-1.5 h-4 w-4" />Nuevo gasto</Link></Button>}
+        actions={
+          <ExpenseFormModal
+            categories={categories}
+            suppliers={suppliers}
+            methods={methods}
+            sessionId={openSession?.id}
+            defaultPaidFromCash={Boolean(openSession)}
+            trigger={<Button><Plus className="mr-1.5 h-4 w-4" />Nuevo gasto</Button>}
+          />
+        }
       />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">

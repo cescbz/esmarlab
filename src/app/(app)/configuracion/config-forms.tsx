@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { DatePicker } from "@/components/ui/date-picker";
 import { saveCompany, saveExpenseCategory, saveProductionStage, saveTimbrado, togglePaymentMethod, updateUser } from "@/actions/settings";
 import { calculateDV } from "@/lib/fiscal";
 
@@ -157,11 +158,19 @@ export function TimbradoForm({ timbrado }: { timbrado: TimbradoValues }) {
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="vigenciaDesde">Vigencia desde</Label>
-        <Input id="vigenciaDesde" type="date" {...register("vigenciaDesde")} />
+        <Controller
+          control={control}
+          name="vigenciaDesde"
+          render={({ field }) => <DatePicker value={field.value} onChange={field.onChange} />}
+        />
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="vigenciaHasta">Vigencia hasta</Label>
-        <Input id="vigenciaHasta" type="date" {...register("vigenciaHasta")} />
+        <Controller
+          control={control}
+          name="vigenciaHasta"
+          render={({ field }) => <DatePicker value={field.value} onChange={field.onChange} />}
+        />
       </div>
       <div className="flex justify-end sm:col-span-2">
         <Button type="submit" disabled={pending}>

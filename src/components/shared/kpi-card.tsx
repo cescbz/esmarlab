@@ -32,10 +32,10 @@ export function KpiCard({
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {label}
           </p>
-          <p className="mt-2 truncate text-[22px] font-semibold leading-none tracking-tight text-foreground tabular">
+          <p title={value} className="mt-2 break-words text-[20px] font-semibold leading-tight tracking-tight text-foreground tabular 2xl:text-[22px]">
             {value}
           </p>
-          {hint ? <p className="mt-2 text-[11px] text-muted-foreground">{hint}</p> : null}
+          {hint ? <p className="mt-2 break-words text-[11px] leading-snug text-muted-foreground">{hint}</p> : null}
         </div>
         <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", tones[tone])}>
           <Icon className="h-4 w-4" />

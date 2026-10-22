@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { EmptyState } from "@/components/shared/empty-state";
 import { formatGs, formatNumber } from "@/lib/format";
+import { ProductFormModal } from "../product-form-modal";
 
 export const metadata: Metadata = { title: "Ficha de producto" };
 
@@ -38,8 +39,9 @@ const TYPE_LABEL: Record<string, string> = {
 };
 
 export default async function ProductDetailPage({ params }: { params: { id: string } }) {
-  const product = await prisma.product.findUnique({
-    where: { id: params.id },
+  const [product, groups] = await Promise.all([
+    prisma.product.findUnique({
+      where: { id: params.id },
     include: {
       group: true,
       variants: {
@@ -57,8 +59,10 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
         },
       },
       productionOrders: { orderBy: { createdAt: "desc" }, take: 10 },
-    },
-  });
+      },
+    }),
+    prisma.productGroup.findMany({ select: { id: true, name: true }, orderBy: { sortOrder: "asc" } }),
+  ]);
   if (!product) notFound();
 
   const variants = product.variants.map((variant) => ({
@@ -108,9 +112,30 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
             <Button asChild variant="outline">
               <Link href="/productos"><ArrowLeft className="mr-1.5 h-4 w-4" />Volver</Link>
             </Button>
-            <Button asChild>
-              <Link href={`/productos/${product.id}/editar`}><Pencil className="mr-1.5 h-4 w-4" />Editar</Link>
-            </Button>
+            <ProductFormModal
+              groups={groups}
+              product={{
+                id: product.id,
+                code: product.code,
+                name: product.name,
+                groupId: product.groupId,
+                type: product.type,
+                unit: product.unit,
+                taxRate: product.taxRate,
+                cost: product.cost,
+                basePrice: product.basePrice,
+                minStock: product.minStock,
+                active: product.active,
+                variants: product.variants.map((variant) => ({
+                  id: variant.id,
+                  size: variant.size,
+                  color: variant.color,
+                  sku: variant.sku,
+                  priceOverride: variant.priceOverride,
+                })),
+              }}
+              trigger={<Button><Pencil className="mr-1.5 h-4 w-4" />Editar</Button>}
+            />
           </>
         }
       />

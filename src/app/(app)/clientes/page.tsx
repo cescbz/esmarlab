@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Plus, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { formatRuc } from "@/lib/fiscal";
 import { formatGs } from "@/lib/format";
 import { CustomersTable, type CustomerRow } from "./customers-table";
+import { CustomerFormModal } from "./customer-form-modal";
 
 export const metadata: Metadata = { title: "Clientes" };
 
@@ -19,7 +19,7 @@ export default async function CustomersPage({
   const estado = searchParams.estado ?? "todos";
   const cuenta = searchParams.cuenta ?? "todos";
 
-  const [customers, balances] = await Promise.all([
+  const [customers, balances, priceLists] = await Promise.all([
     prisma.customer.findMany({
       where:
         estado === "activos"
@@ -35,6 +35,11 @@ export default async function CustomersPage({
       where: { type: "FACTURA" },
       _sum: { balance: true },
     }),
+    prisma.priceList.findMany({
+      where: { active: true },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    }),
   ]);
 
   const balanceMap = new Map(balances.map((row) => [row.customerId, row._sum.balance ?? 0]));
@@ -44,10 +49,17 @@ export default async function CustomersPage({
     name: customer.name,
     type: customer.type,
     ruc: formatRuc(customer.rucBase, customer.dv),
+    rucBase: customer.rucBase,
+    dv: customer.dv,
+    address: customer.address,
     city: customer.city,
+    phone: customer.phone,
+    email: customer.email,
     priceList: customer.priceList.name,
+    priceListId: customer.priceListId,
     saldo: balanceMap.get(customer.id) ?? 0,
     creditLimit: customer.creditLimit,
+    termDays: customer.termDays,
     active: customer.active,
   }));
 
@@ -62,12 +74,15 @@ export default async function CustomersPage({
         title="Clientes"
         description="Empresas y personas con las que opera Esmar. El saldo incluye facturas a crédito pendientes."
         actions={
-          <Button asChild>
-            <Link href="/clientes/nuevo">
-              <Plus className="mr-1.5 h-4 w-4" />
-              Nuevo cliente
-            </Link>
-          </Button>
+          <CustomerFormModal
+            priceLists={priceLists}
+            trigger={
+              <Button>
+                <Plus className="mr-1.5 h-4 w-4" />
+                Nuevo cliente
+              </Button>
+            }
+          />
         }
       />
 
@@ -91,13 +106,15 @@ export default async function CustomersPage({
           <Users className="mx-auto h-6 w-6 text-muted-foreground" />
           <p className="mt-3 text-sm font-semibold">Todavía no hay clientes</p>
           <p className="mt-1 text-xs text-muted-foreground">Creá el primero para comenzar a presupuestar.</p>
-          <Button asChild className="mt-4">
-            <Link href="/clientes/nuevo">Nuevo cliente</Link>
-          </Button>
+          <CustomerFormModal
+            priceLists={priceLists}
+            trigger={<Button className="mt-4">Nuevo cliente</Button>}
+          />
         </div>
       ) : (
         <CustomersTable
           data={rows}
+          priceLists={priceLists}
           toolbar={
             <>
               <FilterSelect

@@ -19,7 +19,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { formatDate, formatGs, formatNumber, toDateInputValue } from "@/lib/format";
+import { formatDate, formatGs, formatGsCompact, formatNumber, toDateInputValue } from "@/lib/format";
 import { ROLE_LABELS } from "@/lib/roles";
 import { lastMonths, monthKey } from "@/lib/reports";
 import { SimpleBarChart, SimplePieChart } from "@/components/reports/charts";
@@ -149,6 +149,8 @@ export default async function DashboardPage() {
   const totalGroupSales = groupSales.reduce((sum, row) => sum + row.total, 0);
   const collectedToday = (receiptsToday._sum.total ?? 0) + (contadoToday._sum.total ?? 0);
   const monthLabel = new Intl.DateTimeFormat("es-PY", { month: "long", year: "numeric", timeZone: "America/Asuncion" }).format(new Date());
+  const dateLabelRaw = new Intl.DateTimeFormat("es-PY", { timeZone: "America/Asuncion", weekday: "long", day: "numeric", month: "long" }).format(new Date());
+  const dateLabel = dateLabelRaw.charAt(0).toUpperCase() + dateLabelRaw.slice(1);
 
   return (
     <div>
@@ -158,7 +160,7 @@ export default async function DashboardPage() {
         actions={
           <div className="flex items-center gap-2 rounded-lg border border-border/80 bg-white px-3 py-2 text-xs text-muted-foreground">
             <CalendarClock className="h-3.5 w-3.5" />
-            <span className="capitalize">{new Intl.DateTimeFormat("es-PY", { timeZone: "America/Asuncion", weekday: "long", day: "numeric", month: "long" }).format(new Date())}</span>
+            <span>{dateLabel}</span>
             <Badge variant="outline" className="ml-1 border-amber-200 bg-amber-50 text-[9px] uppercase text-amber-700">
               {session ? ROLE_LABELS[session.user.role] : ""}
             </Badge>
@@ -166,13 +168,13 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
-        <KpiCard label="Ventas de hoy" value={formatGs(salesDay._sum.total ?? 0)} icon={TrendingUp} tone="accent" />
-        <KpiCard label="Ventas del mes" value={formatGs(salesMonth._sum.total ?? 0)} icon={ReceiptText} />
-        <KpiCard label="Cobrado hoy" value={formatGs(collectedToday)} icon={Banknote} tone="success" />
-        <KpiCard label="Por cobrar" value={formatGs(receivables._sum.balance ?? 0)} hint={`Vencido ${formatGs(overdue._sum.balance ?? 0)}`} icon={Wallet} tone={overdue._sum.balance ? "warning" : "default"} />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+        <KpiCard label="Ventas de hoy" value={formatGsCompact(salesDay._sum.total)} icon={TrendingUp} tone="accent" />
+        <KpiCard label="Ventas del mes" value={formatGsCompact(salesMonth._sum.total)} icon={ReceiptText} />
+        <KpiCard label="Cobrado hoy" value={formatGsCompact(collectedToday)} icon={Banknote} tone="success" />
+        <KpiCard label="Por cobrar" value={formatGsCompact(receivables._sum.balance)} hint={`Vencido ${formatGsCompact(overdue._sum.balance)}`} icon={Wallet} tone={overdue._sum.balance ? "warning" : "default"} />
         <KpiCard label="OPs en proceso" value={String(productionOrders)} icon={Factory} />
-        <KpiCard label="Bajo stock mínimo" value={`${lowProducts.size} productos`} hint="Requiere reposición" icon={PackageX} tone={lowProducts.size > 0 ? "danger" : "success"} />
+        <KpiCard label="Bajo stock mínimo" value={String(lowProducts.size)} hint="Productos que requieren reposición" icon={PackageX} tone={lowProducts.size > 0 ? "danger" : "success"} />
       </div>
 
       <div className="mt-5 grid gap-4 xl:grid-cols-3">
