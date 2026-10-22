@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: esmar
+      POSTGRES_USER: esmar
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-esmar-demo-password}
+    volumes:
+      - esmar_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U esmar -d esmar"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      DATABASE_URL: postgresql://esmar:${POSTGRES_PASSWORD:-esmar-demo-password}@db:5432/esmar?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:-cambiar-este-secreto-en-produccion}
+      NEXT_PUBLIC_EMPRESA_NOMBRE: Esmar SRL
+      SEED_DEMO: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  esmar_pgdata:
