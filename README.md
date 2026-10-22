@@ -2,6 +2,8 @@
 
 Demo funcional de un sistema de gestión para **Esmar SRL** (Ñemby, Paraguay): ventas, producción, stock, caja, facturación electrónica simulada, recibos, gastos y reportes.
 
+**Demo desplegada:** <http://193.46.243.7:3100>
+
 > **DEMO — SIN VALIDEZ FISCAL.** La facturación SIFEN, el CDC, el XML y el KuDE son simulaciones. No se conecta con la SET.
 
 ## Stack
@@ -108,6 +110,7 @@ El seed (`prisma/seed.ts`) es idempotente: limpia los datos de negocio y los vue
 3. Configurá las variables de entorno de la aplicación:
    - `DATABASE_URL` con el hostname interno del servicio PostgreSQL de Dokploy.
    - `AUTH_SECRET`
+   - `AUTH_URL` con la URL pública de la demo
    - `NEXT_PUBLIC_EMPRESA_NOMBRE=Esmar SRL`
    - `SEED_DEMO=true` (solo carga datos si la base está vacía)
 4. Exponé el puerto `3000` (o agregá un dominio en Dokploy).
