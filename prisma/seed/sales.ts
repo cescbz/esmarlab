@@ -405,6 +405,15 @@ export async function seedInvoices(
 
   await prisma.invoice.createMany({ data: invoiceData });
   await prisma.invoice.createMany({ data: creditNotes });
+  for (const point of data.points) {
+    await prisma.expeditionPoint.update({
+      where: { id: point.id },
+      data: {
+        lastInvoiceNumber: counters[point.id] ?? 0,
+        lastCreditNoteNumber: ncCounters[point.id] ?? 0,
+      },
+    });
+  }
   await prisma.invoiceLine.createMany({ data: [...invoiceLineData, ...creditNoteLines] });
   await prisma.sifenEvent.createMany({ data: eventData });
   if (cashMovements.length) await prisma.cashMovement.createMany({ data: cashMovements });
@@ -437,9 +446,20 @@ export async function seedReceipts(
   const candidates = invoiceRecords.filter(
     (invoice) => invoice.condition === InvoiceCondition.CREDITO && invoice.balance > 0
   );
+  const paymentTargets = new Map<string, number>();
+  for (const invoice of candidates) {
+    const profile = randInt(1, 100);
+    const fraction = profile <= 20 ? 0 : profile <= 55 ? randInt(35, 80) / 100 : 1;
+    paymentTargets.set(invoice.id, Math.round(invoice.total * fraction));
+  }
 
   for (let attempt = 0; attempt < 400; attempt++) {
-    const available = candidates.filter((invoice) => invoice.balance > 0);
+    const available = candidates.filter(
+      (invoice) =>
+        invoice.balance > 0 &&
+        invoice.paidAmount < (paymentTargets.get(invoice.id) ?? 0) &&
+        (paymentTargets.get(invoice.id) ?? 0) > 0
+    );
     if (available.length === 0) break;
     const primary = pick(available);
     const customerInvoices = available
@@ -457,11 +477,15 @@ export async function seedReceipts(
     const receiptAllocations: { invoice: InvoiceRecord; amount: number }[] = [];
     for (const invoice of customerInvoices) {
       if (invoice.balance <= 0) continue;
-      const amount = chance(0.55)
-        ? invoice.balance
+      const target = paymentTargets.get(invoice.id) ?? 0;
+      const capacity = Math.max(0, target - invoice.paidAmount);
+      if (capacity <= 0) continue;
+      const amount = chance(0.2)
+        ? Math.min(invoice.balance, capacity)
         : Math.min(
             invoice.balance,
-            money(Math.max(5000, invoice.balance * (randInt(20, 75) / 100)))
+            capacity,
+            money(Math.max(5000, capacity * (randInt(20, 75) / 100)))
           );
       if (amount <= 0) continue;
       receiptAllocations.push({ invoice, amount });
@@ -538,6 +562,12 @@ export async function seedReceipts(
   }
 
   await prisma.receipt.createMany({ data: receipts });
+  for (const point of data.points) {
+    await prisma.expeditionPoint.update({
+      where: { id: point.id },
+      data: { lastReceiptNumber: counters[point.id] ?? 0 },
+    });
+  }
   await prisma.receiptAllocation.createMany({ data: allocations });
   await prisma.receiptPayment.createMany({ data: payments });
   if (movements.length) await prisma.cashMovement.createMany({ data: movements });

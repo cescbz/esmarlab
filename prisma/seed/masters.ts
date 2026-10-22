@@ -238,6 +238,23 @@ export async function seedMasters(): Promise<SeedData> {
     };
   });
   await prisma.customer.createMany({ data: customers });
+  await prisma.customer.create({
+    data: {
+      id: "cus_final",
+      type: CustomerType.PERSONA_FISICA,
+      name: "Consumidor final",
+      rucBase: "44444444",
+      dv: String(calculateDV("44444444")),
+      address: null,
+      city: "Asunción",
+      phone: null,
+      email: null,
+      priceListId: "pl_general",
+      creditLimit: 0,
+      termDays: 0,
+      active: true,
+    },
+  });
 
   const productsData: Prisma.ProductCreateManyInput[] = [];
   const variantsData: Prisma.ProductVariantCreateManyInput[] = [];
