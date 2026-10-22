@@ -1,4 +1,3 @@
-import { randomInt } from "crypto";
 import { toDateInputValue } from "./format";
 
 export type IvaRate = 10 | 5 | 0;
@@ -137,7 +136,7 @@ export function buildCdc(input: CdcInput): string {
   const tipoEmision = pad(onlyDigits(input.tipoEmision ?? "1"), 1);
   const seguridad =
     input.codigoSeguridad ??
-    String(randomInt(0, 999_999_999)).padStart(9, "0");
+    String(Math.floor(Math.random() * 1_000_000_000)).padStart(9, "0");
 
   const first43 = `${tipoDocumento}${ruc}${dv}${establecimiento}${punto}${numero}${tipoContribuyente}${fecha}${tipoEmision}${seguridad}`;
   const check = calculateDV(first43);
