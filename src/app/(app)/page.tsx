@@ -113,6 +113,11 @@ export default async function DashboardPage() {
     }),
   ]);
 
+  const payroll = await prisma.payrollPeriod.findFirst({
+    where: { type: "MENSUAL", status: { in: ["BORRADOR", "CERRADA", "PAGADA"] } },
+    orderBy: [{ year: "desc" }, { month: "desc" }],
+  });
+
   const stockMap = new Map(stockLevels.map((row) => [row.variantId, row._sum.quantity ?? 0]));
   const lowProducts = new Set(
     variants
@@ -176,6 +181,31 @@ export default async function DashboardPage() {
         <KpiCard label="OPs en proceso" value={String(productionOrders)} icon={Factory} />
         <KpiCard label="Bajo stock mínimo" value={String(lowProducts.size)} hint="Productos que requieren reposición" icon={PackageX} tone={lowProducts.size > 0 ? "danger" : "success"} />
       </div>
+
+      {session && ["ADMIN", "GERENCIA", "RRHH"].includes(session.user.role) ? (
+        <Link
+          href="/rrhh/liquidaciones"
+          className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-white px-4 py-3 transition-colors hover:border-primary/30"
+        >
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Wallet className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                Planilla del mes
+              </p>
+              <p className="text-lg font-semibold tabular">
+                {payroll ? formatGs(payroll.netTotal) : "—"}
+              </p>
+            </div>
+          </div>
+          <div className="text-right text-[11px] text-muted-foreground">
+            <p>{payroll ? `${payroll.number} · ${payroll.status}` : "Sin liquidaciones"}</p>
+            <span className="text-primary">Ver liquidaciones →</span>
+          </div>
+        </Link>
+      ) : null}
 
       <div className="mt-5 grid gap-4 xl:grid-cols-3">
         <Card className="border-border/80 shadow-none xl:col-span-2">
