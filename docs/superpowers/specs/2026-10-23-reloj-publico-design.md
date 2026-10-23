@@ -14,7 +14,7 @@ Permitir que los empleados marquen entrada y salida desde una página pública, 
 
 - Ruta fuera del layout autenticado, sin sidebar ni login.
 - `export const dynamic = "force-dynamic"` para que lea siempre la IP y la configuración actual.
-- Si el reloj está desactivado o la IP no está permitida, muestra un panel informativo y no el formulario.
+- Si el reloj está desactivado o la IP no está permitida (cuando `restrictIp` está activo), muestra un panel informativo y no el formulario.
 - Si está habilitado y la IP coincide:
   - Reloj en vivo.
   - Campo CI con DV.
@@ -33,17 +33,19 @@ Permitir que los empleados marquen entrada y salida desde una página pública, 
 Nueva pestaña **Reloj** en `/configuracion`, solo ADMIN:
 
 - Activar/desactivar el kiosco.
+- Switch **“Restringir por IP”**.
 - IP o rango permitido (varias entradas separadas por coma).
 - Botón “Usar mi IP actual”.
 - Título opcional del kiosco.
 - Switch “Exigir foto” (por defecto activo; la demo lo deja obligatorio).
 - URL pública `/kiosco` con botón “Copiar”.
 - Texto de ayuda: la IP es la pública del local/router; los celulares deben estar en la misma red.
+- Si “Restringir por IP” está apagado, la IP no se valida y el kiosco se abre desde cualquier lugar. En la demo está apagado para permitir el acceso desde España y Paraguay. El aviso debe indicar que es un modo abierto.
 
 ### 2.3 Foto
 
 - Obligatoria en entrada y salida.
-- Se captura con la cámara del dispositivo (`getUserMedia`) o, si falla, con un input de archivo `accept="image/*"` con `capture="user"`.
+- Se captura **solo con la cámara del dispositivo** (`getUserMedia`). No hay opción de subir un archivo.
 - Se comprime en el navegador a JPEG, lado máximo 640 px, calidad 0,7.
 - Límite de 300 KB por foto ya comprimida.
 - Se guarda asociada a la marca de asistencia.
@@ -79,6 +81,7 @@ Nueva pestaña **Reloj** en `/configuracion`, solo ADMIN:
 model KioskSettings {
   id           String   @id @default("default")
   enabled      Boolean  @default(false)
+  restrictIp   Boolean  @default(true)
   allowedIps   String   @default("")
   requirePhoto Boolean  @default(true)
   title        String?
@@ -188,7 +191,7 @@ Componente `KioskCamera`:
 - Redimensiona a un lado máximo de 640 px.
 - Calidad 0,7.
 - Muestra preview y botón “Repetir”.
-- Si la cámara no está disponible o el permiso se rechaza, muestra un input de archivo `accept="image/*" capture="user"`.
+- Si la cámara no está disponible o el permiso se rechaza, muestra un error y permite reintentar. No hay fallback de archivo.
 - El formulario no se envía sin foto.
 
 ### 6.2 Servidor
@@ -216,7 +219,7 @@ Validaciones:
 
 1. Lee headers y obtiene la IP.
 2. Lee `KioskSettings`.
-3. Si no existe, está desactivado o la IP no está permitida → error.
+3. Si no existe, está desactivado o (`restrictIp` activo y la IP no está permitida) → error.
 4. Valida `{ ci, pin, photo }` con Zod.
 5. Busca empleado activo por CI normalizada.
 6. Compara PIN con bcrypt.
@@ -257,7 +260,7 @@ No devuelve la foto ni datos de otros empleados.
 
 - Fondo oscuro/brand, reloj grande, sin distracciones.
 - Título: “Reloj de asistencia” o el título configurado.
-- Estado de red: si la IP no está permitida, muestra un panel con el mensaje y no el formulario.
+- Estado de red: si `restrictIp` está activo y la IP no está permitida, muestra un panel con el mensaje y no el formulario.
 - Formulario:
   - CI con DV.
   - PIN.
@@ -366,5 +369,5 @@ No devuelve la foto ni datos de otros empleados.
 - **PIN compartido:** el PIN de 4 dígitos es débil; la foto y la IP son las barreras adicionales. Para producción se recomienda un token de kiosco.
 - **Fotos en DB:** se guardan comprimidas; no se usa almacenamiento externo en esta etapa.
 - **Privacidad:** las fotos solo se ven desde RRHH; la pantalla pública no las muestra.
-- **Cámara:** requiere HTTPS y permiso del navegador. Hay fallback de archivo.
+- **Cámara:** requiere HTTPS y permiso del navegador. No hay fallback de archivo; si la cámara no está disponible, no se puede marcar.
 - **Sin reconocimiento facial:** la foto es evidencia, no validación biométrica.
