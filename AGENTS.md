@@ -5,8 +5,7 @@ Sistema de gestión para **Esmar SRL** (Ñemby, Paraguay), demo funcional. Docum
 ## Estado actual
 
 - Etapas 1–10 completas.
-- **Demo:** https://esmarlab.duckdns.org
-- **Fallback por IP:** http://193.46.243.7:3100
+- **Demo:** https://esmarlab.duckdns.org (único acceso público; puerto 3100 cerrado)
 - **Repo:** https://github.com/cescbz/esmarlab (rama `main`)
 - **Infra:** VPS 193.46.243.7; Dokploy proyecto `Esmar Demo`; app `esmar-demo-7tajdw`; PostgreSQL `esmar-db-b3zw5a` solo en red interna.
 - **Dominio:** DuckDNS `esmarlab.duckdns.org`, apuntado con la sesión del usuario. El token no está en el repo. Tocar dominios/DNS/Cloudflare solo con autorización explícita.
@@ -36,6 +35,8 @@ Tipografía: **IBM Plex Sans** (UI) e **IBM Plex Mono** (códigos/números). Usa
 npm run dev
 npm run build
 npm run lint
+npm test                # Vitest: fiscal, IVA, CDC, formato, roles, códigos
+npm run test:e2e        # Playwright smoke; usar E2E_BASE_URL si no es la demo
 npx prisma migrate dev
 npx prisma db seed      # resetea datos de negocio, conserva usuarios
 docker compose up -d --build
@@ -55,11 +56,14 @@ docker compose up -d --build
 - `src/actions/` server actions; `src/lib/` fiscal, sifen, billing, stock, cash, reports, PDFs.
 - `src/components/pdf/pdf-viewer.tsx` (PDF.js), `src/components/shared/form-dialog.tsx`, `src/components/ui/date-picker.tsx`.
 
+## Tests y CI
+
+- Vitest cubre DV/RUC, IVA incluido, CDC de 44 dígitos, numeración, formato PYG/fechas, total en letras, roles/PDF y códigos internos.
+- Playwright (`e2e/smoke.spec.ts`) verifica login, KPIs, código en columna, modal de cliente, DatePicker, visor PDF.js y permiso 403 de PDF para depósito.
+- GitHub Actions (`.github/workflows/ci.yml`) levanta PostgreSQL 16, migra, seed, unitarios, lint, build y E2E.
+
 ## Pendientes / próximos pasos
 
-- Tests automatizados (unitarios/e2e) y verificación de flujos críticos.
-- KPIs “Ventas de hoy” y “Cobrado hoy” pueden dar 0: el seed no siempre genera movimientos del día. Ajustar seed si se quiere actividad diaria.
-- Permisos finos de PDFs: hoy cualquier usuario autenticado puede abrir un documento por ID.
-- Evaluar códigos internos `CLI-0001` / `PROV-0001` (hoy clientes/proveedores usan RUC como código).
-- Decidir si se cierra el puerto público 3100 al quedar el dominio como acceso principal.
-- Documentos multilínea siguen como páginas; evaluar si se quieren modales full-screen.
+- Documentos multilínea (presupuesto, factura, compra, OP, envío) siguen como páginas; evaluar modales full-screen si se pide.
+- Revisar si se quiere numeración/código visible en PDFs además de la UI.
+- Evaluar tests de mutaciones (crear presupuesto/factura/cobro) contra una base de test dedicada.

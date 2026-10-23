@@ -2,7 +2,7 @@
 
 Demo funcional de un sistema de gestión para **Esmar SRL** (Ñemby, Paraguay): ventas, producción, stock, caja, facturación electrónica simulada, recibos, gastos y reportes.
 
-**Demo desplegada:** <https://esmarlab.duckdns.org> · fallback <http://193.46.243.7:3100>
+**Demo desplegada:** <https://esmarlab.duckdns.org>
 
 > **DEMO — SIN VALIDEZ FISCAL.** La facturación SIFEN, el CDC, el XML y el KuDE son simulaciones. No se conecta con la SET.
 
@@ -99,6 +99,15 @@ El seed (`prisma/seed.ts`) es idempotente: limpia los datos de negocio y los vue
 6. **Cierre de caja**: compará esperado vs. contado por medio de pago y descargá el arqueo en PDF.
 7. **Reportes**: caja por caja, medios de pago, cuentas por cobrar, libro de ventas IVA y margen por producto. Exportá CSV o imprimí.
 
+## Tests
+
+```bash
+npm test                 # unitarios: fiscal, IVA, CDC, formato, permisos, códigos
+npm run test:e2e         # smoke E2E contra E2E_BASE_URL (por defecto la demo)
+```
+
+El workflow de GitHub Actions (`.github/workflows/ci.yml`) levanta PostgreSQL, aplica migraciones, ejecuta el seed, corre unitarios, lint, build y los tests E2E.
+
 ## Reglas de negocio implementadas
 
 - Precios cargados con IVA incluido. Liquidación 10% (`total/11`), 5% (`total/21`) y exento.
@@ -110,6 +119,8 @@ El seed (`prisma/seed.ts`) es idempotente: limpia los datos de negocio y los vue
 - Cierre de caja con arqueo por medio de pago y control de doble cierre.
 - Cancelación de factura solo dentro de 48 h. Notas de crédito para devoluciones.
 - Consumo de materia prima al iniciar OP; ingreso de producto terminado al terminar.
+- Permisos de PDF por rol y tipo de documento.
+- Códigos internos `CLI-0001` y `PROV-0001`.
 
 ## Despliegue en Dokploy y migración a otro VPS
 
