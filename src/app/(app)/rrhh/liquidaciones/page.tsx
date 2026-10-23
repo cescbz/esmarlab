@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Plus, ReceiptText, Timer, Wallet } from "lucide-react";
+import { auth } from "@/auth";
+import { canWrite } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,8 @@ import { PayrollsTable, type PayrollRow } from "./payrolls-table";
 export const metadata: Metadata = { title: "Liquidaciones" };
 
 export default async function PayrollsPage() {
+  const session = await auth();
+  const writable = session ? canWrite(session.user.role, "rrhh") : false;
   const payrolls = await prisma.payrollPeriod.findMany({
     include: { _count: { select: { items: true } } },
     orderBy: [{ year: "desc" }, { month: "desc" }],
@@ -41,14 +45,16 @@ export default async function PayrollsPage() {
         title="Liquidaciones"
         description="Liquidaciones mensuales y aguinaldos. El pago genera el gasto y afecta caja si corresponde."
         actions={
-          <NewPayrollDialog
-            trigger={
-              <Button>
-                <Plus className="mr-1.5 h-4 w-4" />
-                Nueva liquidación
-              </Button>
-            }
-          />
+          writable ? (
+            <NewPayrollDialog
+              trigger={
+                <Button>
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  Nueva liquidación
+                </Button>
+              }
+            />
+          ) : null
         }
       />
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

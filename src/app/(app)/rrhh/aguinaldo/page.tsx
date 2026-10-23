@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BadgeDollarSign, Gift, UsersRound, Wallet } from "lucide-react";
+import { auth } from "@/auth";
+import { canWrite } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,8 @@ import { GenerateAguinaldoButton } from "./generate-aguinaldo-button";
 export const metadata: Metadata = { title: "Aguinaldo" };
 
 export default async function AguinaldoPage() {
+  const session = await auth();
+  const writable = session ? canWrite(session.user.role, "rrhh") : false;
   const year = new Date().getFullYear();
   const [periods, existing] = await Promise.all([
     prisma.payrollPeriod.findMany({
@@ -85,9 +89,9 @@ export default async function AguinaldoPage() {
             <Button asChild>
               <Link href={`/rrhh/liquidaciones/${existing.id}`}>Ver aguinaldo generado</Link>
             </Button>
-          ) : (
+          ) : writable ? (
             <GenerateAguinaldoButton year={year} disabled={rows.length === 0} />
-          )
+          ) : null
         }
       />
 

@@ -138,17 +138,21 @@ export async function savePieceworkEntry(values: unknown): Promise<ActionResult>
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Datos inválidos." };
   }
   const data = parsed.data;
-  await prisma.pieceworkEntry.create({
-    data: {
-      employeeId: data.employeeId,
-      date: new Date(`${data.date}T12:00:00-03:00`),
-      quantity: data.quantity,
-      unitRate: data.unitRate,
-      description: data.description || null,
-      productionOrderStageId: data.productionOrderStageId || null,
-      createdById: session.user.username,
-    },
-  });
+  try {
+    await prisma.pieceworkEntry.create({
+      data: {
+        employeeId: data.employeeId,
+        date: new Date(`${data.date}T12:00:00-03:00`),
+        quantity: data.quantity,
+        unitRate: data.unitRate,
+        description: data.description || null,
+        productionOrderStageId: data.productionOrderStageId || null,
+        createdById: session.user.username,
+      },
+    });
+  } catch {
+    return { ok: false, error: "No pudimos registrar el destajo." };
+  }
   revalidatePath(`/rrhh/empleados/${data.employeeId}`);
   revalidatePath("/rrhh");
   return { ok: true };

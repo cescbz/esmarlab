@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, Pencil, Wallet } from "lucide-react";
+import { auth } from "@/auth";
+import { canWrite } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,8 @@ import { PieceworkFormModal } from "./piecework-form-modal";
 export const metadata: Metadata = { title: "Ficha de empleado" };
 
 export default async function EmployeeDetailPage({ params }: { params: { id: string } }) {
+  const session = await auth();
+  const writable = session ? canWrite(session.user.role, "rrhh") : false;
   const employee = await prisma.employee.findUnique({
     where: { id: params.id },
     include: {
@@ -62,43 +66,45 @@ export default async function EmployeeDetailPage({ params }: { params: { id: str
                 Volver
               </Link>
             </Button>
-            <EmployeeFormModal
-              employee={{
-                id: employee.id,
-                firstName: employee.firstName,
-                lastName: employee.lastName,
-                ci: employee.ci,
-                birthDate: toDateInputValue(employee.birthDate),
-                phone: employee.phone ?? "",
-                email: employee.email ?? "",
-                address: employee.address ?? "",
-                emergencyContact: employee.emergencyContact ?? "",
-                position: employee.position,
-                department: employee.department,
-                workshopId: employee.workshopId ?? "",
-                hireDate: toDateInputValue(employee.hireDate),
-                endDate: toDateInputValue(employee.endDate),
-                status: employee.status,
-                payType: employee.payType,
-                monthlySalary: employee.monthlySalary,
-                dailyRate: employee.dailyRate,
-                pieceRate: employee.pieceRate,
-                scheduledStart: employee.scheduledStart,
-                scheduledEnd: employee.scheduledEnd,
-                lunchMinutes: employee.lunchMinutes,
-                lateToleranceMinutes: employee.lateToleranceMinutes,
-                workDays: employee.workDays,
-                vacationDaysOverride: employee.vacationDaysOverride,
-                notes: employee.notes ?? "",
-              }}
-              workshops={workshops}
-              trigger={
-                <Button>
-                  <Pencil className="mr-1.5 h-4 w-4" />
-                  Editar
-                </Button>
-              }
-            />
+            {writable ? (
+              <EmployeeFormModal
+                employee={{
+                  id: employee.id,
+                  firstName: employee.firstName,
+                  lastName: employee.lastName,
+                  ci: employee.ci,
+                  birthDate: toDateInputValue(employee.birthDate),
+                  phone: employee.phone ?? "",
+                  email: employee.email ?? "",
+                  address: employee.address ?? "",
+                  emergencyContact: employee.emergencyContact ?? "",
+                  position: employee.position,
+                  department: employee.department,
+                  workshopId: employee.workshopId ?? "",
+                  hireDate: toDateInputValue(employee.hireDate),
+                  endDate: toDateInputValue(employee.endDate),
+                  status: employee.status,
+                  payType: employee.payType,
+                  monthlySalary: employee.monthlySalary,
+                  dailyRate: employee.dailyRate,
+                  pieceRate: employee.pieceRate,
+                  scheduledStart: employee.scheduledStart,
+                  scheduledEnd: employee.scheduledEnd,
+                  lunchMinutes: employee.lunchMinutes,
+                  lateToleranceMinutes: employee.lateToleranceMinutes,
+                  workDays: employee.workDays,
+                  vacationDaysOverride: employee.vacationDaysOverride,
+                  notes: employee.notes ?? "",
+                }}
+                workshops={workshops}
+                trigger={
+                  <Button>
+                    <Pencil className="mr-1.5 h-4 w-4" />
+                    Editar
+                  </Button>
+                }
+              />
+            ) : null}
           </>
         }
       />
@@ -208,21 +214,23 @@ export default async function EmployeeDetailPage({ params }: { params: { id: str
         <Card className="border-border/80 shadow-none">
           <CardHeader className="flex-row items-center justify-between border-b border-border/60 px-5 py-3.5">
             <CardTitle className="text-sm font-semibold">Destajo</CardTitle>
-            <PieceworkFormModal
-              employeeId={employee.id}
-              pieceRate={employee.pieceRate ?? 0}
-              stages={stages.map((stage) => ({
-                id: stage.id,
-                label: `${stage.productionOrder.number} · ${stage.stage.name}`,
-                quantity: stage.completedQuantity,
-                description: `${stage.stage.name} · ${stage.productionOrder.number}`,
-              }))}
-              trigger={
-                <Button variant="outline" size="sm">
-                  Registrar unidades
-                </Button>
-              }
-            />
+            {writable ? (
+              <PieceworkFormModal
+                employeeId={employee.id}
+                pieceRate={employee.pieceRate ?? 0}
+                stages={stages.map((stage) => ({
+                  id: stage.id,
+                  label: `${stage.productionOrder.number} · ${stage.stage.name}`,
+                  quantity: stage.completedQuantity,
+                  description: `${stage.stage.name} · ${stage.productionOrder.number}`,
+                }))}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    Registrar unidades
+                  </Button>
+                }
+              />
+            ) : null}
           </CardHeader>
           <CardContent className="p-0">
             {employee.pieceworkEntries.length === 0 ? (

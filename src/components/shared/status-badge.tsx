@@ -29,6 +29,8 @@ const STYLES: Record<string, string> = {
   PAGADA: "border-emerald-200 bg-emerald-50 text-emerald-700",
   ANULADA: "border-slate-200 bg-slate-100 text-slate-500",
   APROBADA: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  RECHAZADA: "border-red-200 bg-red-50 text-red-700",
+  CANCELADA: "border-slate-200 bg-slate-100 text-slate-500",
 };
 
 export const STATUS_LABELS: Record<string, string> = {
@@ -59,6 +61,8 @@ export const STATUS_LABELS: Record<string, string> = {
   PAGADA: "Pagada",
   ANULADA: "Anulada",
   APROBADA: "Aprobada",
+  RECHAZADA: "Rechazada",
+  CANCELADA: "Cancelada",
 };
 
 export function StatusBadge({

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Plus, UsersRound } from "lucide-react";
+import { auth } from "@/auth";
+import { canWrite } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,8 @@ function payDetail(employee: {
 }
 
 export default async function EmployeesPage() {
+  const session = await auth();
+  const writable = session ? canWrite(session.user.role, "rrhh") : false;
   const [employees, workshops] = await Promise.all([
     prisma.employee.findMany({ orderBy: { code: "asc" } }),
     prisma.workshop.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
@@ -52,15 +56,17 @@ export default async function EmployeesPage() {
         title="Empleados"
         description="Fichas, horarios, formas de pago y PIN del reloj."
         actions={
-          <EmployeeFormModal
-            workshops={workshops}
-            trigger={
-              <Button>
-                <Plus className="mr-1.5 h-4 w-4" />
-                Nuevo empleado
-              </Button>
-            }
-          />
+          writable ? (
+            <EmployeeFormModal
+              workshops={workshops}
+              trigger={
+                <Button>
+                  <Plus className="mr-1.5 h-4 w-4" />
+                  Nuevo empleado
+                </Button>
+              }
+            />
+          ) : null
         }
       />
       <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

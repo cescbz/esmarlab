@@ -83,13 +83,15 @@ export default async function VacationsPage() {
         title="Vacaciones"
         description={`Saldos y solicitudes del año ${year}. La aprobación descuenta días disponibles.`}
         actions={
-          <VacationFormModal
-            employees={employees.map((employee) => ({
-              id: employee.id,
-              name: `${employee.firstName} ${employee.lastName}`,
-            }))}
-            trigger={<Button>Nueva solicitud</Button>}
-          />
+          writable ? (
+            <VacationFormModal
+              employees={employees.map((employee) => ({
+                id: employee.id,
+                name: `${employee.firstName} ${employee.lastName}`,
+              }))}
+              trigger={<Button>Nueva solicitud</Button>}
+            />
+          ) : null
         }
       />
 

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Plus } from "lucide-react";
+import { auth } from "@/auth";
+import { canWrite } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -30,6 +32,8 @@ export default async function AttendanceDetailPage({
   params: { employeeId: string };
   searchParams: { mes?: string };
 }) {
+  const session = await auth();
+  const writable = session ? canWrite(session.user.role, "rrhh") : false;
   const employee = await prisma.employee.findUnique({ where: { id: params.employeeId } });
   if (!employee) notFound();
   const fallback = currentPeriod();
@@ -55,15 +59,17 @@ export default async function AttendanceDetailPage({
                 Volver
               </Link>
             </Button>
-            <AttendanceCorrectionDialog
-              employeeId={employee.id}
-              trigger={
-                <Button>
-                  <Plus className="mr-1.5 h-4 w-4" />
-                  Agregar marca
-                </Button>
-              }
-            />
+            {writable ? (
+              <AttendanceCorrectionDialog
+                employeeId={employee.id}
+                trigger={
+                  <Button>
+                    <Plus className="mr-1.5 h-4 w-4" />
+                    Agregar marca
+                  </Button>
+                }
+              />
+            ) : null}
           </>
         }
       />
@@ -93,20 +99,22 @@ export default async function AttendanceDetailPage({
                     {record.overtimeMinutes ? `${record.overtimeMinutes} min extra` : ""}
                   </div>
                   <div className="w-24 text-muted-foreground">{record.source}</div>
-                  <AttendanceCorrectionDialog
-                    employeeId={employee.id}
-                    record={{
-                      date: toDateInputValue(record.date),
-                      checkIn: timeValue(record.checkIn?.toISOString() ?? null),
-                      checkOut: timeValue(record.checkOut?.toISOString() ?? null),
-                      notes: record.notes ?? "",
-                    }}
-                    trigger={
-                      <Button variant="outline" size="sm" className="h-7 text-xs">
-                        Corregir
-                      </Button>
-                    }
-                  />
+                  {writable ? (
+                    <AttendanceCorrectionDialog
+                      employeeId={employee.id}
+                      record={{
+                        date: toDateInputValue(record.date),
+                        checkIn: timeValue(record.checkIn?.toISOString() ?? null),
+                        checkOut: timeValue(record.checkOut?.toISOString() ?? null),
+                        notes: record.notes ?? "",
+                      }}
+                      trigger={
+                        <Button variant="outline" size="sm" className="h-7 text-xs">
+                          Corregir
+                        </Button>
+                      }
+                    />
+                  ) : null}
                 </div>
               ))}
             </div>
