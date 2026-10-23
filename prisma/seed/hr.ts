@@ -305,6 +305,12 @@ function buildTimestamp(base: Date, totalMinutes: number) {
 
 export async function seedHR() {
   const pinHash = await bcrypt.hash("1234", 10);
+  const kiosk = await prisma.kioskSettings.findUnique({ where: { id: "default" } });
+  if (!kiosk) {
+    await prisma.kioskSettings.create({
+      data: { id: "default", enabled: false, allowedIps: "", requirePhoto: true },
+    });
+  }
   const employees = EMPLOYEES.map((employee) => {
     const { ciBase, ...rest } = employee;
     return {

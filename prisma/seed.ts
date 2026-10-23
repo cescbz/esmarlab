@@ -18,7 +18,7 @@ const prisma = new PrismaClient();
 async function cleanup() {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE
-      "PayrollItem", "PayrollPeriod", "PieceworkEntry", "VacationRequest", "Attendance", "Employee",
+      "PayrollItem", "PayrollPeriod", "PieceworkEntry", "VacationRequest", "AttendancePhoto", "Attendance", "Employee",
       "ReceiptPayment", "ReceiptAllocation", "CashMovement", "SifenEvent", "InvoiceLine", "Invoice",
       "Receipt", "Expense", "ProductionOrderStage", "ProductionOrderLine", "ProductionOrder",
       "ShipmentLine", "Shipment", "SalesOrderLine", "SalesOrder", "QuoteLine", "Quote",

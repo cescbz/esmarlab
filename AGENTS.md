@@ -27,6 +27,7 @@ Tipografía: **IBM Plex Sans** (UI) e **IBM Plex Mono** (códigos/números). Usa
 - Toda tabla muestra el **código en columna propia** (producto, SKU, RUC, número de documento).
 - Formularios de alta/edición de **clientes, productos, proveedores, listas de precios y gastos** abren en modal (`FormDialog`). Los documentos multilínea (presupuesto, factura, compra, OP, envío) siguen como página.
 - RRHH: fichas de empleado en modal; el reloj marca entrada/salida con CI + PIN; las liquidaciones, vacaciones y aguinaldos se gestionan desde `/rrhh`. Los recibos de sueldo se ven con PDF.js en `/ver/recibo-sueldo/...`.
+- Reloj público `/kiosco`: sin login, restringido por IP del local y con foto obligatoria de entrada/salida. Se configura en `/configuracion` → Reloj. Las fotos se ven desde el detalle de asistencia.
 - PDFs de presupuesto, KuDE, recibo y arqueo se ven dentro de la app con PDF.js en `/ver/...`; las APIs de descarga siguen en `/api/pdf/...`.
 - Empty states, toasts y confirmaciones en toda acción destructiva.
 
@@ -56,12 +57,13 @@ docker compose up -d --build
 - `src/app/(app)/` módulos: clientes, productos, proveedores, stock, compras, ventas, facturación, caja, gastos, producción, rrhh, reportes, configuración.
 - `src/actions/` server actions; `src/lib/` fiscal, sifen, billing, stock, cash, reports, payroll, PDFs.
 - `src/lib/payroll.ts` (jornada, liquidación, aguinaldo, vacaciones), `src/lib/pdf/payroll-receipt-pdf.tsx`.
+- `src/app/kiosco/` (reloj público), `src/lib/ip.ts` (allowlist), `src/lib/photo.ts` (validación de fotos), `AttendancePhoto` en Prisma.
 - `src/components/pdf/pdf-viewer.tsx` (PDF.js), `src/components/shared/form-dialog.tsx`, `src/components/ui/date-picker.tsx`.
 
 ## Tests y CI
 
-- Vitest cubre DV/RUC, IVA incluido, CDC de 44 dígitos, numeración, formato PYG/fechas, total en letras, roles/PDF, códigos internos, jornada, tardanzas, extras, jornal, destajo, mixto, IPS, aguinaldo y vacaciones.
-- Playwright (`e2e/smoke.spec.ts`, `e2e/rrhh.spec.ts`) verifica login, KPIs, código en columna, modal de cliente, DatePicker, visor PDF.js, permiso 403 de PDF para depósito, panel RRHH, modal de empleado, reloj y recibo de sueldo.
+- Vitest cubre DV/RUC, IVA incluido, CDC de 44 dígitos, numeración, formato PYG/fechas, total en letras, roles/PDF, códigos internos, jornada, tardanzas, extras, jornal, destajo, mixto, IPS, aguinaldo, vacaciones, allowlist de IP y fotos.
+- Playwright (`e2e/smoke.spec.ts`, `e2e/rrhh.spec.ts`, `e2e/kiosco.spec.ts`) verifica login, KPIs, código en columna, modal de cliente, DatePicker, visor PDF.js, permiso 403 de PDF para depósito, panel RRHH, modal de empleado, reloj, recibo de sueldo, configuración del kiosco y estado público.
 - GitHub Actions (`.github/workflows/ci.yml`) levanta PostgreSQL 16, migra, seed, unitarios, lint, build y E2E.
 
 ## Pendientes / próximos pasos

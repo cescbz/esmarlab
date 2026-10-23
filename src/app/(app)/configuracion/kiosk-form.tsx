@@ -109,9 +109,9 @@ export function KioskForm({
       </div>
 
       <div className="space-y-1.5">
-        <Label>URL pública</Label>
+        <Label htmlFor="kioskPublicUrl">URL pública</Label>
         <div className="flex gap-2">
-          <Input readOnly value={publicUrl} className="font-mono text-xs" />
+          <Input id="kioskPublicUrl" readOnly value={publicUrl} className="font-mono text-xs" />
           <Button type="button" variant="outline" onClick={copyUrl}>
             <Copy className="h-3.5 w-3.5" />
           </Button>
