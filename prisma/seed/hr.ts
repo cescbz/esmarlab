@@ -371,6 +371,7 @@ export async function seedHR() {
       const lastDay = new Date(Date.UTC(2026, month, 0)).getUTCDate();
       for (let day = 1; day <= lastDay; day++) {
         const date = dateAt(2026, month, day);
+        const dayStart = dateAt(2026, month, day, 0, 0);
         if (date > today) continue;
         if (!isWorkday(date, employee.workDays)) continue;
         if (
@@ -385,7 +386,7 @@ export async function seedHR() {
         }
         if (chance(0.05)) continue;
         if (employee.code === "EMP-0008" && month === 10 && day === 15) {
-          const checkIn = buildTimestamp(date, minutes(employee.scheduledStart) + 12);
+          const checkIn = buildTimestamp(dayStart, minutes(employee.scheduledStart) + 12);
           const computation = computeAttendance({
             date,
             checkIn,
@@ -410,8 +411,8 @@ export async function seedHR() {
         }
         const late = chance(0.1) ? randInt(5, 25) : 0;
         const overtime = chance(0.15) ? randInt(30, 90) : 0;
-        const checkIn = buildTimestamp(date, minutes(employee.scheduledStart) + late);
-        const checkOut = buildTimestamp(date, minutes(employee.scheduledEnd) + overtime);
+        const checkIn = buildTimestamp(dayStart, minutes(employee.scheduledStart) + late);
+        const checkOut = buildTimestamp(dayStart, minutes(employee.scheduledEnd) + overtime);
         const computation = computeAttendance({
           date,
           checkIn,
