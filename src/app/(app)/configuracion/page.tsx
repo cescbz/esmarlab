@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { Building2, CreditCard, Factory, ReceiptText, Users, Wallet } from "lucide-react";
+import { Building2, Clock, CreditCard, Factory, ReceiptText, Users, Wallet } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { formatRuc } from "@/lib/fiscal";
 import { toDateInputValue } from "@/lib/format";
+import { getClientIp } from "@/lib/ip";
 import {
   CompanyForm,
   CreateCategoryForm,
@@ -16,11 +18,12 @@ import {
   TimbradoForm,
   UserRoleRow,
 } from "./config-forms";
+import { KioskForm } from "./kiosk-form";
 
 export const metadata: Metadata = { title: "Configuración" };
 
 export default async function SettingsPage() {
-  const [company, timbrado, points, registers, terminals, methods, stages, categories, users] =
+  const [company, timbrado, points, registers, terminals, methods, stages, categories, users, kioskSettings] =
     await Promise.all([
       prisma.company.findFirst(),
       prisma.timbrado.findFirst({ orderBy: { vigenciaDesde: "desc" } }),
@@ -31,8 +34,17 @@ export default async function SettingsPage() {
       prisma.productionStage.findMany({ orderBy: { sortOrder: "asc" } }),
       prisma.expenseCategory.findMany({ orderBy: { name: "asc" } }),
       prisma.user.findMany({ orderBy: { username: "asc" } }),
+      prisma.kioskSettings.findUnique({ where: { id: "default" } }),
     ]);
   if (!company) notFound();
+
+  const headerList = headers();
+  const currentIp = getClientIp({
+    forwardedFor: headerList.get("x-forwarded-for"),
+    realIp: headerList.get("x-real-ip"),
+    cfConnectingIp: headerList.get("cf-connecting-ip"),
+    trustCloudflare: process.env.TRUST_CLOUDFLARE === "1",
+  });
 
   return (
     <div>
@@ -48,6 +60,7 @@ export default async function SettingsPage() {
           <TabsTrigger value="cajas" className="text-xs"><Wallet className="mr-1.5 h-3.5 w-3.5" />Cajas</TabsTrigger>
           <TabsTrigger value="produccion" className="text-xs"><Factory className="mr-1.5 h-3.5 w-3.5" />Producción</TabsTrigger>
           <TabsTrigger value="gastos" className="text-xs"><CreditCard className="mr-1.5 h-3.5 w-3.5" />Gastos</TabsTrigger>
+          <TabsTrigger value="reloj" className="text-xs"><Clock className="mr-1.5 h-3.5 w-3.5" />Reloj</TabsTrigger>
           <TabsTrigger value="usuarios" className="text-xs"><Users className="mr-1.5 h-3.5 w-3.5" />Usuarios</TabsTrigger>
         </TabsList>
 
@@ -190,6 +203,25 @@ export default async function SettingsPage() {
                 ))}
               </div>
               <CreateCategoryForm />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="reloj" className="mt-4">
+          <Card className="border-border/80 shadow-none">
+            <CardHeader className="border-b border-border/60 px-5 py-3.5">
+              <CardTitle className="text-sm font-semibold">Reloj público</CardTitle>
+            </CardHeader>
+            <CardContent className="p-5">
+              <KioskForm
+                currentIp={currentIp}
+                settings={{
+                  enabled: kioskSettings?.enabled ?? false,
+                  allowedIps: kioskSettings?.allowedIps ?? "",
+                  requirePhoto: kioskSettings?.requirePhoto ?? true,
+                  title: kioskSettings?.title ?? "",
+                }}
+              />
             </CardContent>
           </Card>
         </TabsContent>
