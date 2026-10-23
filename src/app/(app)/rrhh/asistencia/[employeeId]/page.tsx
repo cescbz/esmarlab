@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDate, formatTime, toDateInputValue } from "@/lib/format";
 import { currentPeriod, periodRange } from "@/lib/hr";
 import { AttendanceCorrectionDialog } from "./attendance-correction-dialog";
+import { PhotoDialog } from "./photo-dialog";
 import { AttendancePeriodSelector } from "../attendance-period-selector";
 
 export const metadata: Metadata = { title: "Detalle de asistencia" };
@@ -42,6 +43,7 @@ export default async function AttendanceDetailPage({
   const range = periodRange(year, month);
   const records = await prisma.attendance.findMany({
     where: { employeeId: employee.id, date: { gte: range.start, lte: range.end } },
+    include: { photos: true },
     orderBy: { date: "asc" },
   });
 
@@ -99,6 +101,11 @@ export default async function AttendanceDetailPage({
                     {record.overtimeMinutes ? `${record.overtimeMinutes} min extra` : ""}
                   </div>
                   <div className="w-24 text-muted-foreground">{record.source}</div>
+                  <div className="flex gap-1">
+                    {record.photos.map((photo) => (
+                      <PhotoDialog key={photo.id} photoId={photo.id} type={photo.type} />
+                    ))}
+                  </div>
                   {writable ? (
                     <AttendanceCorrectionDialog
                       employeeId={employee.id}
