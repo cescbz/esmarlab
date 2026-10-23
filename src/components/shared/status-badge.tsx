@@ -23,6 +23,12 @@ const STYLES: Record<string, string> = {
   TERMINADA: "border-emerald-200 bg-emerald-50 text-emerald-700",
   COMPLETADA: "border-emerald-200 bg-emerald-50 text-emerald-700",
   RECIBIDA: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  ACTIVO: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  INACTIVO: "border-slate-200 bg-slate-100 text-slate-500",
+  LICENCIA: "border-amber-200 bg-amber-50 text-amber-700",
+  PAGADA: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  ANULADA: "border-slate-200 bg-slate-100 text-slate-500",
+  APROBADA: "border-emerald-200 bg-emerald-50 text-emerald-700",
 };
 
 export const STATUS_LABELS: Record<string, string> = {
@@ -47,6 +53,12 @@ export const STATUS_LABELS: Record<string, string> = {
   TERMINADA: "Terminada",
   COMPLETADA: "Completada",
   RECIBIDA: "Recibida",
+  ACTIVO: "Activo",
+  INACTIVO: "Inactivo",
+  LICENCIA: "Licencia",
+  PAGADA: "Pagada",
+  ANULADA: "Anulada",
+  APROBADA: "Aprobada",
 };
 
 export function StatusBadge({

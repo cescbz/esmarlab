@@ -14,6 +14,45 @@ enum Role {
   CAJA
   DEPOSITO
   PRODUCCION
+  RRHH
+}
+
+enum EmployeeStatus {
+  ACTIVO
+  INACTIVO
+  LICENCIA
+}
+
+enum PayType {
+  MENSUAL
+  JORNAL
+  DESTAJO
+  MIXTO
+}
+
+enum AttendanceSource {
+  RELOJ
+  MANUAL
+  CORRECCION
+}
+
+enum PayrollStatus {
+  BORRADOR
+  CERRADA
+  PAGADA
+  ANULADA
+}
+
+enum PayrollType {
+  MENSUAL
+  AGUINALDO
+}
+
+enum VacationStatus {
+  PENDIENTE
+  APROBADA
+  RECHAZADA
+  CANCELADA
 }
 
 enum CustomerType {
@@ -620,6 +659,7 @@ model PaymentMethod {
   receiptPayments    ReceiptPayment[]
   cashMovements      CashMovement[]
   expenses           Expense[]
+  payrollPeriods     PayrollPeriod[]
 }
 
 model CashSession {
@@ -739,6 +779,7 @@ model Expense {
   paidFromCash    Boolean        @default(false)
   userId          String?
   createdAt       DateTime       @default(now())
+  payrollPeriod   PayrollPeriod?
 
   @@index([date])
   @@index([categoryId])
@@ -763,6 +804,7 @@ model Workshop {
   active        Boolean   @default(true)
   bomStages     BomStage[]
   orderStages   ProductionOrderStage[]
+  employees     Employee[]
 }
 
 model BillOfMaterials {
@@ -856,6 +898,175 @@ model ProductionOrderStage {
   externalCost      Int                  @default(0)
   notes             String?
   sortOrder         Int                  @default(0)
+  pieceworkEntries  PieceworkEntry[]
 
   @@unique([productionOrderId, stageId])
+}
+
+model Employee {
+  id                   String         @id @default(cuid())
+  code                 String         @unique
+  firstName            String
+  lastName             String
+  ci                   String         @unique
+  birthDate            DateTime?
+  phone                String?
+  email                String?
+  address              String?
+  emergencyContact     String?
+  position             String
+  department           String
+  workshopId           String?
+  workshop             Workshop?      @relation(fields: [workshopId], references: [id])
+  hireDate             DateTime
+  endDate              DateTime?
+  status               EmployeeStatus @default(ACTIVO)
+  payType              PayType
+  monthlySalary        Int?
+  dailyRate            Int?
+  pieceRate            Int?
+  scheduledStart       String         @default("07:30")
+  scheduledEnd         String         @default("17:00")
+  lunchMinutes         Int            @default(60)
+  workDays             Int[]          @default([1, 2, 3, 4, 5, 6])
+  lateToleranceMinutes Int            @default(10)
+  pinHash              String
+  vacationDaysOverride Int?
+  notes                String?
+  attendance           Attendance[]
+  pieceworkEntries     PieceworkEntry[]
+  vacationRequests     VacationRequest[]
+  payrollItems         PayrollItem[]
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@index([status])
+  @@index([department])
+}
+
+model Attendance {
+  id                String           @id @default(cuid())
+  employeeId        String
+  employee          Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date              DateTime
+  checkIn           DateTime?
+  checkOut          DateTime?
+  breakMinutes      Int              @default(0)
+  lateMinutes       Int              @default(0)
+  earlyLeaveMinutes Int              @default(0)
+  overtimeMinutes   Int              @default(0)
+  workedMinutes     Int              @default(0)
+  lateCount         Int              @default(0)
+  source            AttendanceSource @default(RELOJ)
+  notes             String?
+  correctedById     String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([employeeId, date])
+  @@index([date])
+}
+
+model PieceworkEntry {
+  id                     String                @id @default(cuid())
+  employeeId             String
+  employee               Employee              @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date                   DateTime
+  quantity               Int
+  unitRate               Int
+  description            String?
+  productionOrderStageId String?
+  productionOrderStage   ProductionOrderStage? @relation(fields: [productionOrderStageId], references: [id])
+  createdById            String?
+  createdAt              DateTime              @default(now())
+
+  @@index([employeeId, date])
+  @@index([productionOrderStageId])
+}
+
+model VacationRequest {
+  id          String         @id @default(cuid())
+  employeeId  String
+  employee    Employee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  startDate   DateTime
+  endDate     DateTime
+  days        Int
+  status      VacationStatus @default(PENDIENTE)
+  reason      String?
+  requestedAt DateTime       @default(now())
+  decidedAt   DateTime?
+  decidedBy   String?
+  notes       String?
+
+  @@index([employeeId, status])
+  @@index([startDate, endDate])
+}
+
+model PayrollPeriod {
+  id               String         @id @default(cuid())
+  number           String         @unique
+  type             PayrollType
+  year             Int
+  month            Int
+  startDate        DateTime
+  endDate          DateTime
+  status           PayrollStatus  @default(BORRADOR)
+  grossTotal       Int            @default(0)
+  ipsEmployeeTotal Int            @default(0)
+  ipsEmployerTotal Int            @default(0)
+  deductionsTotal  Int            @default(0)
+  netTotal         Int            @default(0)
+  extraTotal       Int            @default(0)
+  pieceTotal       Int            @default(0)
+  lateTotal        Int            @default(0)
+  absenceTotal     Int            @default(0)
+  vacationTotal    Int            @default(0)
+  closedAt         DateTime?
+  paidAt           DateTime?
+  paymentMethodId  String?
+  paymentMethod    PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+  paidFromCash     Boolean        @default(false)
+  expenseId        String?        @unique
+  expense          Expense?       @relation(fields: [expenseId], references: [id])
+  notes            String?
+  userId           String?
+  items            PayrollItem[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@unique([type, year, month])
+  @@index([status])
+}
+
+model PayrollItem {
+  id               String        @id @default(cuid())
+  payrollId        String
+  payroll          PayrollPeriod @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+  employeeId       String
+  employee         Employee      @relation(fields: [employeeId], references: [id])
+  payType          PayType
+  baseAmount       Int           @default(0)
+  workedDays       Int           @default(0)
+  pieceUnits       Int           @default(0)
+  pieceAmount      Int           @default(0)
+  extraMinutes     Int           @default(0)
+  extraAmount      Int           @default(0)
+  lateMinutes      Int           @default(0)
+  lateDeduction    Int           @default(0)
+  absenceDays      Int           @default(0)
+  absenceDeduction Int           @default(0)
+  vacationDays     Int           @default(0)
+  vacationAmount   Int           @default(0)
+  otherEarnings    Int           @default(0)
+  otherDeductions  Int           @default(0)
+  grossAmount      Int           @default(0)
+  ipsBase          Int           @default(0)
+  ipsEmployee      Int           @default(0)
+  ipsEmployer      Int           @default(0)
+  netAmount        Int           @default(0)
+  concepts         Json?
+  notes            String?
+
+  @@unique([payrollId, employeeId])
+  @@index([employeeId])
 }

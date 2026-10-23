@@ -4,7 +4,8 @@ export type AppRole =
   | "VENTAS"
   | "CAJA"
   | "DEPOSITO"
-  | "PRODUCCION";
+  | "PRODUCCION"
+  | "RRHH";
 
 export const ROLE_LABELS: Record<AppRole, string> = {
   ADMIN: "Administrador",
@@ -13,6 +14,7 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   CAJA: "Caja",
   DEPOSITO: "Depósito",
   PRODUCCION: "Producción",
+  RRHH: "Recursos Humanos",
 };
 
 export const ROLE_DESCRIPTIONS: Record<AppRole, string> = {
@@ -22,6 +24,7 @@ export const ROLE_DESCRIPTIONS: Record<AppRole, string> = {
   CAJA: "Caja, cobros y gastos",
   DEPOSITO: "Stock y compras",
   PRODUCCION: "Fichas técnicas y órdenes",
+  RRHH: "Empleados, asistencia, liquidaciones y recibos",
 };
 
 export const ALL_ROLES: AppRole[] = [
@@ -31,6 +34,7 @@ export const ALL_ROLES: AppRole[] = [
   "CAJA",
   "DEPOSITO",
   "PRODUCCION",
+  "RRHH",
 ];
 
 const ACCESS: { prefix: string; roles: AppRole[] }[] = [
@@ -92,10 +96,13 @@ const ACCESS: { prefix: string; roles: AppRole[] }[] = [
     roles: ["GERENCIA", "DEPOSITO", "ADMIN"],
   },
   {
-    prefix: "/listas-de-precios",
-    roles: ["GERENCIA", "VENTAS", "ADMIN"],
+    prefix: "/reportes",
+    roles: ["GERENCIA", "ADMIN"],
   },
-  { prefix: "/reportes", roles: ["GERENCIA", "ADMIN"] },
+  {
+    prefix: "/rrhh",
+    roles: ["GERENCIA", "RRHH", "ADMIN"],
+  },
 ];
 
 export function canAccess(role: AppRole, pathname: string): boolean {
@@ -110,7 +117,7 @@ export function canAccess(role: AppRole, pathname: string): boolean {
   return false;
 }
 
-export type PdfKind = "presupuesto" | "kude" | "recibo" | "arqueo" | "xml";
+export type PdfKind = "presupuesto" | "kude" | "recibo" | "arqueo" | "xml" | "recibo-sueldo";
 
 const PDF_ACCESS: Record<PdfKind, AppRole[]> = {
   presupuesto: ["ADMIN", "GERENCIA", "VENTAS"],
@@ -118,6 +125,7 @@ const PDF_ACCESS: Record<PdfKind, AppRole[]> = {
   recibo: ["ADMIN", "GERENCIA", "VENTAS", "CAJA"],
   arqueo: ["ADMIN", "GERENCIA", "CAJA"],
   xml: ["ADMIN", "GERENCIA", "VENTAS", "CAJA"],
+  "recibo-sueldo": ["ADMIN", "GERENCIA", "RRHH"],
 };
 
 export function canViewPdf(role: AppRole, kind: PdfKind): boolean {
@@ -140,6 +148,8 @@ export function canWrite(role: AppRole, module: string): boolean {
       return role === "DEPOSITO";
     case "produccion":
       return role === "PRODUCCION";
+    case "rrhh":
+      return ["ADMIN", "RRHH"].includes(role);
     case "configuracion":
       return false;
     default:

@@ -29,3 +29,11 @@ export async function nextSupplierCode(): Promise<string> {
   });
   return formatInternalCode("PROV", nextSequenceFromCodes("PROV", rows.map((row) => row.code)));
 }
+
+export async function nextEmployeeCode(): Promise<string> {
+  const rows = await prisma.employee.findMany({
+    where: { code: { startsWith: "EMP-" } },
+    select: { code: true },
+  });
+  return formatInternalCode("EMP", nextSequenceFromCodes("EMP", rows.map((row) => row.code)));
+}
