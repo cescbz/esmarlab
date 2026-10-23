@@ -55,6 +55,11 @@ enum VacationStatus {
   CANCELADA
 }
 
+enum AttendanceMarkType {
+  ENTRADA
+  SALIDA
+}
+
 enum CustomerType {
   PERSONA_FISICA
   PERSONA_JURIDICA
@@ -960,6 +965,7 @@ model Attendance {
   source            AttendanceSource @default(RELOJ)
   notes             String?
   correctedById     String?
+  photos            AttendancePhoto[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
@@ -1069,4 +1075,27 @@ model PayrollItem {
 
   @@unique([payrollId, employeeId])
   @@index([employeeId])
+}
+
+model KioskSettings {
+  id           String   @id @default("default")
+  enabled      Boolean  @default(false)
+  allowedIps   String   @default("")
+  requirePhoto Boolean  @default(true)
+  title        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AttendancePhoto {
+  id           String             @id @default(cuid())
+  attendanceId String
+  attendance   Attendance         @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  type         AttendanceMarkType
+  data         String
+  mimeType     String             @default("image/jpeg")
+  createdAt    DateTime           @default(now())
+
+  @@unique([attendanceId, type])
+  @@index([attendanceId])
 }
