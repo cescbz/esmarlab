@@ -48,6 +48,7 @@ Nueva pestaña **Reloj** en `/configuracion`, solo ADMIN:
 - Límite de 300 KB por foto ya comprimida.
 - Se guarda asociada a la marca de asistencia.
 - RRHH/ADMIN/GERENCIA puede verla desde el detalle de asistencia mediante un visor; la página pública no la muestra.
+- **Control de RRHH:** no hay aprobación ni rechazo formal de la marca. RRHH ve las fotos de entrada/salida y, si algo no coincide, corrige la marca desde el detalle de asistencia. La foto queda como evidencia.
 
 ### 2.4 Fuera de alcance
 
@@ -94,19 +95,28 @@ model KioskSettings {
 ### 4.2 `AttendancePhoto`
 
 ```prisma
+enum AttendanceMarkType {
+  ENTRADA
+  SALIDA
+}
+
 model AttendancePhoto {
-  id           String     @id @default(cuid())
-  attendanceId String     @unique
-  attendance   Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  id           String             @id @default(cuid())
+  attendanceId String
+  attendance   Attendance         @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
+  type         AttendanceMarkType
   data         String
-  mimeType     String     @default("image/jpeg")
-  createdAt    DateTime   @default(now())
+  mimeType     String             @default("image/jpeg")
+  createdAt    DateTime           @default(now())
+
+  @@unique([attendanceId, type])
+  @@index([attendanceId])
 }
 ```
 
 - `data` guarda el data URL completo (`data:image/jpeg;base64,...`).
-- Se agrega la relación inversa `photo AttendancePhoto?` en `Attendance`.
-- Índice único por `attendanceId`.
+- Se agrega la relación inversa `photos AttendancePhoto[]` en `Attendance`.
+- Una foto por tipo de marca: `ENTRADA` y `SALIDA` pueden coexistir para el mismo día.
 - Se trunca en el seed antes de `Attendance`.
 
 ### 4.3 Migración
@@ -215,7 +225,7 @@ Validaciones:
    - Si no existe: crea `checkIn = ahora`, calcula tardanza y deja salida pendiente.
    - Si existe sin salida: completa `checkOut = ahora`, recalcula.
    - Si ya tiene entrada y salida: error “Ya registraste entrada y salida hoy”.
-9. Valida y guarda la foto en `AttendancePhoto` dentro de la misma transacción.
+9. Valida y guarda la foto en `AttendancePhoto` dentro de la misma transacción, con `type = ENTRADA` o `SALIDA` según la marca.
 10. Devuelve `{ ok, employeeName, mark, time, lateMinutes, overtimeMinutes }`.
 11. Revalida `/rrhh/asistencia`, `/rrhh/reloj` y `/rrhh`.
 
@@ -275,7 +285,7 @@ No devuelve la foto ni datos de otros empleados.
 
 ### 8.3 Detalle de asistencia
 
-- Si la marca tiene foto, mostrar botón “Ver foto”.
+- Si la marca tiene foto de entrada o salida, mostrar botones “Ver foto entrada” y “Ver foto salida” según existan.
 - Al hacer clic, abrir un diálogo con la imagen y la fecha/hora.
 - La imagen se carga desde `/api/attendance/photo/[id]`, no inline en la página.
 
@@ -323,13 +333,13 @@ No devuelve la foto ni datos de otros empleados.
 ### 11.2 E2E local
 
 - ADMIN abre `/configuracion`, pestaña Reloj, y ve el formulario.
-- Guarda `enabled = true`, `allowedIps = 127.0.0.1`.
-- Abre `/kiosco` sin sesión y ve el formulario.
-- Marca con CI/PIN de un empleado y una foto de prueba (Playwright `setInputFiles`).
-- Ve el mensaje de entrada registrada.
-- ADMIN abre el detalle de asistencia y ve “Ver foto”.
-- Cambia `allowedIps` a `10.0.0.1` y verifica que `/kiosco` muestra el bloqueo.
-- Restaura la configuración.
+- `/kiosco` responde con un estado controlado: desactivado, red no autorizada o formulario.
+- El flujo completo con cámara/foto se verifica manualmente en local:
+  - Guardar `enabled = true` y `allowedIps = 127.0.0.1` o `::1`.
+  - Abrir `/kiosco` sin sesión.
+  - Marcar con CI/PIN de un empleado y una foto.
+  - Ver la foto desde el detalle de asistencia.
+  - Restaurar la configuración.
 
 ### 11.3 E2E producción
 
