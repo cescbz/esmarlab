@@ -193,6 +193,14 @@ export async function seedProduction(data: SeedData, commercial: OrderContext) {
     dueDate: daysFromNow(randInt(4, 18)),
     progress: 0,
   });
+  while (activeSpecs.length < 6) {
+    activeSpecs.push({
+      productId: pick(fabricatedProducts).id!,
+      orderId: null,
+      dueDate: daysFromNow(randInt(2, 16)),
+      progress: randInt(0, 3),
+    });
+  }
 
   let consumptionCounter = 0;
   for (let i = 0; i < activeSpecs.length; i++) {

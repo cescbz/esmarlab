@@ -20,8 +20,8 @@ test("login y dashboard con KPIs", async ({ page }) => {
 test("productos muestran código en columna propia", async ({ page }) => {
   await login(page);
   await page.goto("/productos");
-  await expect(page.getByRole("columnheader", { name: "Código" })).toBeVisible();
-  await expect(page.getByRole("columnheader", { name: "Producto" })).toBeVisible();
+  await expect(page.locator("thead th").filter({ hasText: "Código" })).toBeVisible();
+  await expect(page.locator("thead th").filter({ hasText: "Producto" })).toBeVisible();
   await expect(page.locator("tbody").getByText(/FAB-\d{3}/).first()).toBeVisible();
 });
 
