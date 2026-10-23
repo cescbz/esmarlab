@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import NextImage from "next/image";
-import { Camera, Loader2, RefreshCw, Upload } from "lucide-react";
+import { Camera, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 async function compressImage(dataUrl: string): Promise<string> {
@@ -35,7 +35,6 @@ export function KioskCamera({
   required: boolean;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [active, setActive] = useState(false);
@@ -63,7 +62,7 @@ export function KioskCamera({
       }
       setActive(true);
     } catch {
-      setError("No pudimos abrir la cámara. Podés subir una foto.");
+      setError("No pudimos abrir la cámara. Verificá el permiso del navegador.");
       setActive(false);
     } finally {
       setStarting(false);
@@ -92,23 +91,6 @@ export function KioskCamera({
     stopCamera();
   }
 
-  async function chooseFile(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const compressed = await compressImage(String(reader.result));
-        setPhoto(compressed);
-        onChange(compressed);
-        setError(null);
-      } catch {
-        setError("No pudimos procesar la imagen.");
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-
   function retake() {
     setPhoto(null);
     onChange(null);
@@ -118,14 +100,6 @@ export function KioskCamera({
 
   return (
     <div className="space-y-2">
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*"
-        className="sr-only"
-        data-testid="kiosk-photo-input"
-        onChange={chooseFile}
-      />
       {photo ? (
         <div className="space-y-2">
           <NextImage
@@ -165,18 +139,6 @@ export function KioskCamera({
             )}
             {starting ? "Abriendo cámara..." : "Activar cámara"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full border-brand/25 text-foreground"
-            onClick={() => fileRef.current?.click()}
-          >
-            <Upload className="mr-1.5 h-4 w-4" />
-            Subir foto
-          </Button>
-          <p className="text-[11px] text-muted-foreground">
-            Si la cámara no abre, subí una foto desde el archivo o la galería.
-          </p>
           {error ? <p className="text-xs text-amber-700">{error}</p> : null}
           {required ? (
             <p className="text-[11px] text-muted-foreground">La foto es obligatoria.</p>
