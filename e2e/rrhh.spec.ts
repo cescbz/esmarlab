@@ -11,7 +11,9 @@ async function login(page: Page, username = "admin") {
 test("RRHH: panel y empleados con legajo", async ({ page }) => {
   await login(page);
   await page.goto("/rrhh");
-  await expect(page.getByRole("heading", { name: "Recursos Humanos" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Recursos Humanos", level: 2 })
+  ).toBeVisible();
   await expect(page.getByText("Empleados activos")).toBeVisible();
   await page.goto("/rrhh/empleados");
   await expect(page.locator("thead th").filter({ hasText: "Legajo" })).toBeVisible();
