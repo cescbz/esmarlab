@@ -117,7 +117,7 @@ export function PayrollItemsTable({
       cell: ({ row }) => (
         <div className="flex items-center justify-end gap-1">
           <Button asChild variant="ghost" size="icon" className="h-7 w-7" aria-label="Ver recibo">
-            <Link href={`/ver/recibo-sueldo/${row.original.id}`}>
+            <Link href={`/ver/recibo-sueldo/${row.original.id}`} aria-label="Ver recibo">
               <FileText className="h-3.5 w-3.5" />
             </Link>
           </Button>
