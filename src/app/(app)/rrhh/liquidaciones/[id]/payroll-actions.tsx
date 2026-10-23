@@ -50,7 +50,11 @@ export function PayrollActions({
   const [closeOpen, setCloseOpen] = useState(false);
   const [annulOpen, setAnnulOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
-  const [methodId, setMethodId] = useState(methods[0]?.id ?? "pm_EFECTIVO");
+  const defaultMethod =
+    methods.find((method) => method.id === "pm_EFECTIVO")?.id ??
+    methods[0]?.id ??
+    "pm_EFECTIVO";
+  const [methodId, setMethodId] = useState(defaultMethod);
   const [paidFromCash, setPaidFromCash] = useState(false);
 
   if (!canWrite) return null;

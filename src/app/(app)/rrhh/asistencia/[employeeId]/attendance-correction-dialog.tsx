@@ -84,7 +84,7 @@ export function AttendanceCorrectionDialog({
               <Label>Fecha</Label>
               {record ? (
                 <p className="flex h-9 items-center rounded-md border border-border bg-secondary/40 px-3 text-xs">
-                  {formatDate(record.date)}
+                  {formatDate(new Date(`${record.date}T12:00:00-03:00`))}
                 </p>
               ) : (
                 <Controller

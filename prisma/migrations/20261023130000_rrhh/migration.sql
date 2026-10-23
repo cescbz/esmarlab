@@ -44,7 +44,7 @@ CREATE TABLE "Employee" (
     "scheduledStart" TEXT NOT NULL DEFAULT '07:30',
     "scheduledEnd" TEXT NOT NULL DEFAULT '17:00',
     "lunchMinutes" INTEGER NOT NULL DEFAULT 60,
-    "workDays" INTEGER[] DEFAULT ARRAY[1, 2, 3, 4, 5, 6],
+    "workDays" INTEGER[] DEFAULT ARRAY[1, 2, 3, 4, 5, 6]::INTEGER[],
     "lateToleranceMinutes" INTEGER NOT NULL DEFAULT 10,
     "pinHash" TEXT NOT NULL,
     "vacationDaysOverride" INTEGER,

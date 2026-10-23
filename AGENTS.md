@@ -4,12 +4,12 @@ Sistema de gestión para **Esmar SRL** (Ñemby, Paraguay), demo funcional. Docum
 
 ## Estado actual
 
-- Etapas 1–10 completas.
+- Etapas 1–11 completas.
 - **Demo:** https://esmarlab.duckdns.org (único acceso público; puerto 3100 cerrado)
 - **Repo:** https://github.com/cescbz/esmarlab (rama `main`)
 - **Infra:** VPS 193.46.243.7; Dokploy proyecto `Esmar Demo`; app `esmar-demo-7tajdw`; PostgreSQL `esmar-db-b3zw5a` solo en red interna.
 - **Dominio:** DuckDNS `esmarlab.duckdns.org`, apuntado con la sesión del usuario. El token no está en el repo. Tocar dominios/DNS/Cloudflare solo con autorización explícita.
-- **Usuarios demo:** `admin`, `gerencia`, `ventas`, `caja`, `deposito`, `produccion`; contraseña `demo1234`.
+- **Usuarios demo:** `admin`, `gerencia`, `ventas`, `caja`, `deposito`, `produccion`, `rrhh`; contraseña `demo1234`.
 - `AUTH_URL` en Dokploy debe coincidir con el dominio público. Si cambia el dominio, actualizarlo y redeployar.
 
 ## Stack
@@ -26,6 +26,7 @@ Tipografía: **IBM Plex Sans** (UI) e **IBM Plex Mono** (códigos/números). Usa
 - Stock y dinero siempre en `prisma.$transaction`.
 - Toda tabla muestra el **código en columna propia** (producto, SKU, RUC, número de documento).
 - Formularios de alta/edición de **clientes, productos, proveedores, listas de precios y gastos** abren en modal (`FormDialog`). Los documentos multilínea (presupuesto, factura, compra, OP, envío) siguen como página.
+- RRHH: fichas de empleado en modal; el reloj marca entrada/salida con CI + PIN; las liquidaciones, vacaciones y aguinaldos se gestionan desde `/rrhh`. Los recibos de sueldo se ven con PDF.js en `/ver/recibo-sueldo/...`.
 - PDFs de presupuesto, KuDE, recibo y arqueo se ven dentro de la app con PDF.js en `/ver/...`; las APIs de descarga siguen en `/api/pdf/...`.
 - Empty states, toasts y confirmaciones en toda acción destructiva.
 
@@ -35,10 +36,10 @@ Tipografía: **IBM Plex Sans** (UI) e **IBM Plex Mono** (códigos/números). Usa
 npm run dev
 npm run build
 npm run lint
-npm test                # Vitest: fiscal, IVA, CDC, formato, roles, códigos
+npm test                # Vitest: fiscal, IVA, CDC, formato, roles, códigos, RRHH
 npm run test:e2e        # Playwright smoke; usar E2E_BASE_URL si no es la demo
 npx prisma migrate dev
-npx prisma db seed      # resetea datos de negocio, conserva usuarios
+npx prisma db seed      # resetea datos de negocio, conserva usuarios; carga RRHH demo
 docker compose up -d --build
 ```
 
@@ -52,14 +53,15 @@ docker compose up -d --build
 ## Mapa
 
 - `prisma/schema.prisma`, `prisma/seed/` (modular).
-- `src/app/(app)/` módulos: clientes, productos, proveedores, stock, compras, ventas, facturación, caja, gastos, producción, reportes, configuración.
-- `src/actions/` server actions; `src/lib/` fiscal, sifen, billing, stock, cash, reports, PDFs.
+- `src/app/(app)/` módulos: clientes, productos, proveedores, stock, compras, ventas, facturación, caja, gastos, producción, rrhh, reportes, configuración.
+- `src/actions/` server actions; `src/lib/` fiscal, sifen, billing, stock, cash, reports, payroll, PDFs.
+- `src/lib/payroll.ts` (jornada, liquidación, aguinaldo, vacaciones), `src/lib/pdf/payroll-receipt-pdf.tsx`.
 - `src/components/pdf/pdf-viewer.tsx` (PDF.js), `src/components/shared/form-dialog.tsx`, `src/components/ui/date-picker.tsx`.
 
 ## Tests y CI
 
-- Vitest cubre DV/RUC, IVA incluido, CDC de 44 dígitos, numeración, formato PYG/fechas, total en letras, roles/PDF y códigos internos.
-- Playwright (`e2e/smoke.spec.ts`) verifica login, KPIs, código en columna, modal de cliente, DatePicker, visor PDF.js y permiso 403 de PDF para depósito.
+- Vitest cubre DV/RUC, IVA incluido, CDC de 44 dígitos, numeración, formato PYG/fechas, total en letras, roles/PDF, códigos internos, jornada, tardanzas, extras, jornal, destajo, mixto, IPS, aguinaldo y vacaciones.
+- Playwright (`e2e/smoke.spec.ts`, `e2e/rrhh.spec.ts`) verifica login, KPIs, código en columna, modal de cliente, DatePicker, visor PDF.js, permiso 403 de PDF para depósito, panel RRHH, modal de empleado, reloj y recibo de sueldo.
 - GitHub Actions (`.github/workflows/ci.yml`) levanta PostgreSQL 16, migra, seed, unitarios, lint, build y E2E.
 
 ## Pendientes / próximos pasos

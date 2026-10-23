@@ -67,7 +67,7 @@ export function ClockKiosk({
     <div className="mx-auto max-w-5xl">
       <div className="mb-6 text-center">
         <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          Reloj de asistencia · {todayKey}
+          Reloj de asistencia · {todayKey.split("-").reverse().join("/")}
         </p>
         <p className="mt-2 font-mono text-5xl font-semibold tabular sm:text-6xl">
           {now.toLocaleTimeString("es-PY", {

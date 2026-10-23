@@ -66,9 +66,9 @@ export default async function PayrollsPage() {
           icon={ReceiptText}
         />
         <KpiCard
-          label="Horas extras del último período"
-          value={latest ? `${Math.round(latest.extraTotal / 6) / 10} h` : "—"}
-          hint={latest ? formatGs(latest.extraTotal) : "—"}
+          label="Extras del último período"
+          value={latest ? formatGs(latest.extraTotal) : "—"}
+          hint="Monto de horas extras"
           icon={Timer}
         />
         <KpiCard
