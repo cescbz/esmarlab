@@ -10,6 +10,7 @@ import {
 } from "./seed/sales";
 import { seedQuotes, seedOrdersAndShipments, seedPurchases } from "./seed/commercial";
 import { seedProduction } from "./seed/production";
+import { seedHR } from "./seed/hr";
 import { daysAgo, randInt, pick } from "./seed/helpers";
 
 const prisma = new PrismaClient();
@@ -17,6 +18,7 @@ const prisma = new PrismaClient();
 async function cleanup() {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE
+      "PayrollItem", "PayrollPeriod", "PieceworkEntry", "VacationRequest", "Attendance", "Employee",
       "ReceiptPayment", "ReceiptAllocation", "CashMovement", "SifenEvent", "InvoiceLine", "Invoice",
       "Receipt", "Expense", "ProductionOrderStage", "ProductionOrderLine", "ProductionOrder",
       "ShipmentLine", "Shipment", "SalesOrderLine", "SalesOrder", "QuoteLine", "Quote",
@@ -121,6 +123,9 @@ async function main() {
   await seedProduction(data, commercial);
   console.log("Órdenes de producción y consumo de materia prima listos.");
 
+  await seedHR();
+  console.log("Empleados, asistencia, liquidaciones y recibos listos.");
+
   await adjustLowStock(data.stockMap);
   console.log("Ajustes de stock bajo mínimo listos.");
 
@@ -133,6 +138,8 @@ async function main() {
     pedidos: await prisma.salesOrder.count(),
     ordenesProduccion: await prisma.productionOrder.count(),
     movimientosStock: await prisma.stockMovement.count(),
+    empleados: await prisma.employee.count(),
+    liquidaciones: await prisma.payrollPeriod.count(),
   };
   console.log("Seed completado:", counts);
 }
