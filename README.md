@@ -2,7 +2,7 @@
 
 Demo funcional de un sistema de gestión para **Esmar SRL** (Ñemby, Paraguay): ventas, producción, stock, caja, facturación electrónica simulada, recibos, gastos y reportes.
 
-**Demo desplegada:** <http://193.46.243.7:3100>
+**Demo desplegada:** <https://esmarlab.duckdns.org> · fallback <http://193.46.243.7:3100>
 
 > **DEMO — SIN VALIDEZ FISCAL.** La facturación SIFEN, el CDC, el XML y el KuDE son simulaciones. No se conecta con la SET.
 
@@ -14,6 +14,8 @@ Demo funcional de un sistema de gestión para **Esmar SRL** (Ñemby, Paraguay): 
 - Auth.js (NextAuth v5) con credenciales y sesiones JWT
 - Zod, react-hook-form, @tanstack/react-table, recharts
 - @react-pdf/renderer + qrcode para presupuestos, KuDE, recibos y arqueos
+- PDF.js (Mozilla) para visualizar los PDFs dentro de la app
+- IBM Plex Sans / IBM Plex Mono
 - Dockerfile multi-stage y docker-compose
 
 ## Levantar con Docker
@@ -80,6 +82,12 @@ El seed (`prisma/seed.ts`) es idempotente: limpia los datos de negocio y los vue
 - 46 órdenes de producción (40 terminadas, 6 en proceso, 2 atrasadas)
 - Caja 1 abierta hoy, Caja 2 cerrada, movimientos y arqueos recientes
 - Clientes con saldos vencidos, productos bajo stock mínimo y pedidos parcialmente despachados
+
+## Formularios y tablas
+
+- Los códigos se muestran en columna propia: producto, SKU, RUC y número de documento.
+- Clientes, productos, proveedores, listas de precios y gastos se crean/editan en modales.
+- Los PDFs se abren con el visor PDF.js en `/ver/...`.
 
 ## Recorrido sugerido para la presentación (10 minutos)
 
