@@ -21,6 +21,8 @@ export const authConfig = {
         return true;
       }
 
+      if (nextUrl.pathname.startsWith("/kiosco")) return true;
+
       if (!isLoggedIn) return false;
 
       const role = (auth?.user?.role ?? "VENTAS") as AppRole;
