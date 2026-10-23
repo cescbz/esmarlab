@@ -14,12 +14,19 @@ export function KioskForm({
   settings,
   currentIp,
 }: {
-  settings: { enabled: boolean; allowedIps: string; requirePhoto: boolean; title: string };
+  settings: {
+    enabled: boolean;
+    restrictIp: boolean;
+    allowedIps: string;
+    requirePhoto: boolean;
+    title: string;
+  };
   currentIp: string;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [enabled, setEnabled] = useState(settings.enabled);
+  const [restrictIp, setRestrictIp] = useState(settings.restrictIp);
   const [allowedIps, setAllowedIps] = useState(settings.allowedIps);
   const [requirePhoto, setRequirePhoto] = useState(settings.requirePhoto);
   const [title, setTitle] = useState(settings.title);
@@ -31,7 +38,13 @@ export function KioskForm({
 
   function save() {
     startTransition(async () => {
-      const result = await saveKioskSettings({ enabled, allowedIps, requirePhoto, title });
+      const result = await saveKioskSettings({
+        enabled,
+        restrictIp,
+        allowedIps,
+        requirePhoto,
+        title,
+      });
       if (!result.ok) {
         toast.error(result.error ?? "No pudimos guardar la configuración.");
         return;
@@ -62,6 +75,16 @@ export function KioskForm({
         <Switch checked={enabled} onCheckedChange={setEnabled} />
       </div>
 
+      <div className="flex items-center justify-between rounded-lg border border-border/70 px-3.5 py-2.5">
+        <div>
+          <p className="text-sm font-medium">Restringir por IP</p>
+          <p className="text-xs text-muted-foreground">
+            Apagado, el kiosco se abre desde cualquier lugar. Encendido, solo desde la IP permitida.
+          </p>
+        </div>
+        <Switch checked={restrictIp} onCheckedChange={setRestrictIp} />
+      </div>
+
       <div className="space-y-1.5">
         <Label htmlFor="allowedIps">IP o rango permitido</Label>
         <Input
@@ -69,6 +92,7 @@ export function KioskForm({
           value={allowedIps}
           onChange={(event) => setAllowedIps(event.target.value)}
           placeholder="190.1.2.3, 190.1.2.0/24"
+          disabled={!restrictIp}
         />
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <span>
@@ -80,12 +104,15 @@ export function KioskForm({
             size="sm"
             className="h-7 text-xs"
             onClick={() => setAllowedIps(currentIp)}
+            disabled={!restrictIp}
           >
             Usar mi IP actual
           </Button>
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Es la IP pública del local/router. Los celulares deben estar en la misma red Wi-Fi.
+          {restrictIp
+            ? "Es la IP pública del local/router. Los celulares deben estar en la misma red Wi-Fi."
+            : "Modo abierto para demo: cualquier persona con el link puede marcar con CI + PIN + foto."}
         </p>
       </div>
 

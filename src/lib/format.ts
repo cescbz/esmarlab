@@ -76,6 +76,7 @@ export function formatDateTime(value: Date | string | null | undefined): string 
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   }).format(date);
 }
 
@@ -87,6 +88,7 @@ export function formatTime(value: Date | string | null | undefined): string {
     timeZone: TZ,
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
   }).format(date);
 }
 

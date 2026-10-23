@@ -217,6 +217,7 @@ export default async function SettingsPage() {
                 currentIp={currentIp}
                 settings={{
                   enabled: kioskSettings?.enabled ?? false,
+                  restrictIp: kioskSettings?.restrictIp ?? true,
                   allowedIps: kioskSettings?.allowedIps ?? "",
                   requirePhoto: kioskSettings?.requirePhoto ?? true,
                   title: kioskSettings?.title ?? "",

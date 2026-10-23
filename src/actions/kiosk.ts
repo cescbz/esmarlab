@@ -22,6 +22,7 @@ export async function saveKioskSettings(values: unknown): Promise<ActionResult> 
   const parsed = z
     .object({
       enabled: z.boolean().default(false),
+      restrictIp: z.boolean().default(true),
       allowedIps: z.string().optional().default(""),
       requirePhoto: z.boolean().default(true),
       title: z.string().optional().default(""),
@@ -41,6 +42,7 @@ export async function saveKioskSettings(values: unknown): Promise<ActionResult> 
     where: { id: "default" },
     update: {
       enabled: data.enabled,
+      restrictIp: data.restrictIp,
       allowedIps,
       requirePhoto: data.requirePhoto,
       title: data.title || null,
@@ -48,6 +50,7 @@ export async function saveKioskSettings(values: unknown): Promise<ActionResult> 
     create: {
       id: "default",
       enabled: data.enabled,
+      restrictIp: data.restrictIp,
       allowedIps,
       requirePhoto: data.requirePhoto,
       title: data.title || null,
@@ -104,7 +107,7 @@ export async function publicClockPunch(values: unknown): Promise<PublicClockPunc
   });
   const settings = await prisma.kioskSettings.findUnique({ where: { id: "default" } });
   if (!settings?.enabled) return { ok: false, error: "El reloj público está desactivado." };
-  if (!isIpAllowed(ip, settings.allowedIps)) {
+  if (settings.restrictIp && !isIpAllowed(ip, settings.allowedIps)) {
     return { ok: false, error: "Este reloj solo funciona desde la red autorizada." };
   }
 

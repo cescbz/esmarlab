@@ -1080,6 +1080,7 @@ model PayrollItem {
 model KioskSettings {
   id           String   @id @default("default")
   enabled      Boolean  @default(false)
+  restrictIp   Boolean  @default(true)
   allowedIps   String   @default("")
   requirePhoto Boolean  @default(true)
   title        String?

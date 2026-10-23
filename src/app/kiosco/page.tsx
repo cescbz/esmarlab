@@ -50,7 +50,7 @@ export default async function KioscoPage() {
       />
     );
   }
-  if (!isIpAllowed(ip, settings.allowedIps)) {
+  if (settings.restrictIp && !isIpAllowed(ip, settings.allowedIps)) {
     return (
       <KioskMessage
         title="Red no autorizada"

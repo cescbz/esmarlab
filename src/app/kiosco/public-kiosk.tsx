@@ -56,6 +56,7 @@ export function PublicKiosk({
       ? new Date(result.time).toLocaleTimeString("es-PY", {
           hour: "2-digit",
           minute: "2-digit",
+          hour12: false,
           timeZone: "America/Asuncion",
         })
       : "";
@@ -95,6 +96,7 @@ export function PublicKiosk({
               hour: "2-digit",
               minute: "2-digit",
               second: "2-digit",
+              hour12: false,
               timeZone: "America/Asuncion",
             })}
           </p>

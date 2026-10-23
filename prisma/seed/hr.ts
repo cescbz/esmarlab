@@ -308,7 +308,13 @@ export async function seedHR() {
   const kiosk = await prisma.kioskSettings.findUnique({ where: { id: "default" } });
   if (!kiosk) {
     await prisma.kioskSettings.create({
-      data: { id: "default", enabled: false, allowedIps: "", requirePhoto: true },
+      data: {
+        id: "default",
+        enabled: false,
+        restrictIp: true,
+        allowedIps: "",
+        requirePhoto: true,
+      },
     });
   }
   const employees = EMPLOYEES.map((employee) => {

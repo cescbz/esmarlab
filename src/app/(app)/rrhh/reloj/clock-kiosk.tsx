@@ -50,6 +50,7 @@ export function ClockKiosk({
       const time = new Date(result.time ?? Date.now()).toLocaleTimeString("es-PY", {
         hour: "2-digit",
         minute: "2-digit",
+        hour12: false,
         timeZone: "America/Asuncion",
       });
       toast.success(
@@ -74,6 +75,7 @@ export function ClockKiosk({
             hour: "2-digit",
             minute: "2-digit",
             second: "2-digit",
+            hour12: false,
             timeZone: "America/Asuncion",
           })}
         </p>
