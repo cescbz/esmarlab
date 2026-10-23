@@ -38,6 +38,7 @@ export function KioskCamera({
   const streamRef = useRef<MediaStream | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [active, setActive] = useState(false);
+  const [ready, setReady] = useState(false);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,8 +48,30 @@ export function KioskCamera({
     };
   }, []);
 
+  useEffect(() => {
+    if (!active) return;
+    const video = videoRef.current;
+    const stream = streamRef.current;
+    if (!video || !stream) return;
+    video.srcObject = stream;
+    const play = async () => {
+      try {
+        await video.play();
+        setReady(true);
+      } catch {
+        setError("No pudimos iniciar la cámara.");
+      }
+    };
+    if (video.readyState >= 1) void play();
+    else video.onloadedmetadata = () => void play();
+    return () => {
+      video.onloadedmetadata = null;
+    };
+  }, [active]);
+
   async function startCamera() {
     setError(null);
+    setReady(false);
     setStarting(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -56,10 +79,6 @@ export function KioskCamera({
         audio: false,
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
       setActive(true);
     } catch {
       setError("No pudimos abrir la cámara. Verificá el permiso del navegador.");
@@ -72,6 +91,7 @@ export function KioskCamera({
   function stopCamera() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
+    setReady(false);
     setActive(false);
   }
 
@@ -124,9 +144,13 @@ export function KioskCamera({
             muted
             className="h-48 w-full rounded-lg bg-black object-cover"
           />
-          <Button type="button" className="w-full" onClick={capture}>
-            <Camera className="mr-1.5 h-4 w-4" />
-            Tomar foto
+          <Button type="button" className="w-full" onClick={capture} disabled={!ready}>
+            {ready ? (
+              <Camera className="mr-1.5 h-4 w-4" />
+            ) : (
+              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            )}
+            {ready ? "Tomar foto" : "Preparando cámara..."}
           </Button>
         </div>
       ) : (
