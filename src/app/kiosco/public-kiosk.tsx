@@ -124,7 +124,7 @@ export function PublicKiosk({
                 onChange={(event) => setCi(event.target.value)}
                 placeholder="1234567-8"
                 autoComplete="off"
-                className="h-11 text-base"
+                className="h-11 text-base text-foreground"
               />
             </div>
             <div className="space-y-1.5">
@@ -137,7 +137,7 @@ export function PublicKiosk({
                 value={pin}
                 onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))}
                 placeholder="••••"
-                className="h-11 text-base"
+                className="h-11 text-base text-foreground"
               />
             </div>
             <KioskCamera
