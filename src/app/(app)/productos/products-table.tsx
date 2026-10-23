@@ -161,16 +161,18 @@ function ProductActions({ product, groups }: { product: ProductRow; groups: { id
 function buildColumns(groups: { id: string; name: string }[]): ColumnDef<ProductRow, unknown>[] {
   return [
   {
+    accessorKey: "code",
+    header: "Código",
+    cell: ({ row }) => <span className="font-mono text-[11px] font-medium">{row.original.code}</span>,
+  },
+  {
     accessorKey: "name",
     header: "Producto",
     cell: ({ row }) => (
-      <div className="min-w-[230px]">
+      <div className="min-w-[210px]">
         <Link href={`/productos/${row.original.id}`} className="font-medium hover:text-primary hover:underline">
           {row.original.name}
         </Link>
-        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-          {row.original.code}
-        </p>
       </div>
     ),
   },

@@ -33,6 +33,7 @@ export default async function ProductionOrdersPage({
       id: order.id,
       number: order.number,
       product: order.product.name,
+      productCode: order.product.code,
       order: order.order?.number ?? "—",
       customer: order.order?.customer.name ?? "—",
       quantity: order.quantity,

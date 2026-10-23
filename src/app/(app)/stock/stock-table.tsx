@@ -24,15 +24,17 @@ export type StockRow = {
 
 const columns: ColumnDef<StockRow, unknown>[] = [
   {
+    accessorKey: "sku",
+    header: "Código",
+    cell: ({ row }) => <span className="font-mono text-[11px]">{row.original.sku}</span>,
+  },
+  {
     accessorKey: "product",
     header: "Producto",
     cell: ({ row }) => (
-      <div>
-        <Link href={`/productos/${row.original.productId}`} className="font-medium hover:text-primary hover:underline">
-          {row.original.product}
-        </Link>
-        <p className="mt-0.5 font-mono text-[10px] text-muted-foreground">{row.original.sku}</p>
-      </div>
+      <Link href={`/productos/${row.original.productId}`} className="font-medium hover:text-primary hover:underline">
+        {row.original.product}
+      </Link>
     ),
   },
   { accessorKey: "variant", header: "Variante" },

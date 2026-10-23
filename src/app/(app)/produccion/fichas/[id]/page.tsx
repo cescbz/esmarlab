@@ -76,6 +76,7 @@ export default async function BomDetailPage({ params }: { params: { id: string }
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                <TableHead>Código</TableHead>
                 <TableHead>Material</TableHead>
                 <TableHead>Variante</TableHead>
                 <TableHead className="text-right">Cantidad</TableHead>
@@ -87,6 +88,7 @@ export default async function BomDetailPage({ params }: { params: { id: string }
             <TableBody>
               {product.bom.lines.map((line) => (
                 <TableRow key={line.id}>
+                  <TableCell className="font-mono text-[10px]">{line.materialVariant.sku}</TableCell>
                   <TableCell className="text-xs font-medium">{line.materialVariant.product.name}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{line.materialVariant.size} · {line.materialVariant.color}</TableCell>
                   <TableCell className="text-right text-xs tabular">{line.quantity} {line.materialVariant.product.unit}</TableCell>

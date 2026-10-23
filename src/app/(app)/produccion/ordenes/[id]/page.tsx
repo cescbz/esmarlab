@@ -169,6 +169,7 @@ export default async function ProductionOrderDetailPage({ params }: { params: { 
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                      <TableHead>Código</TableHead>
                       <TableHead>Material</TableHead>
                       <TableHead>Depósito</TableHead>
                       <TableHead className="text-right">Cantidad</TableHead>
@@ -179,9 +180,10 @@ export default async function ProductionOrderDetailPage({ params }: { params: { 
                   <TableBody>
                     {consumed.map((movement) => (
                       <TableRow key={movement.id}>
+                        <TableCell className="font-mono text-[10px]">{movement.variant.sku}</TableCell>
                         <TableCell>
                           <p className="text-xs font-medium">{movement.variant.product.name}</p>
-                          <p className="text-[10px] text-muted-foreground">{movement.variant.color} · {movement.variant.sku}</p>
+                          <p className="text-[10px] text-muted-foreground">{movement.variant.color}</p>
                         </TableCell>
                         <TableCell className="text-xs">{movement.warehouse.name}</TableCell>
                         <TableCell className="text-right text-xs tabular">{movement.quantity}</TableCell>

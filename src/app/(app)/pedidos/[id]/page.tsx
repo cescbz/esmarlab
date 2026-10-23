@@ -125,6 +125,7 @@ export default async function OrderDetailPage({ params }: { params: { id: string
               <Table>
                 <TableHeader>
                   <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                    <TableHead>Código</TableHead>
                     <TableHead>Producto</TableHead>
                     <TableHead className="text-right">Pedido</TableHead>
                     <TableHead className="text-right">Despachado</TableHead>
@@ -136,10 +137,11 @@ export default async function OrderDetailPage({ params }: { params: { id: string
                 <TableBody>
                   {order.lines.map((line) => (
                     <TableRow key={line.id}>
+                      <TableCell className="font-mono text-[10px]">{line.variant.sku}</TableCell>
                       <TableCell>
                         <p className="text-xs font-medium">{line.variant.product.name}</p>
                         <p className="text-[10px] text-muted-foreground">
-                          {line.variant.size} · {line.variant.color} · {line.variant.sku}
+                          {line.variant.size} · {line.variant.color}
                           {line.isCustomized ? " · Personalizado" : ""}
                         </p>
                       </TableCell>

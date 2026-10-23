@@ -177,6 +177,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-brand hover:bg-brand">
+                        <TableHead className="text-[9px] uppercase text-white/80">Código</TableHead>
                         <TableHead className="text-[9px] uppercase text-white/80">Descripción</TableHead>
                         <TableHead className="text-center text-[9px] uppercase text-white/80">Cant.</TableHead>
                         <TableHead className="text-right text-[9px] uppercase text-white/80">Precio unit.</TableHead>
@@ -186,6 +187,7 @@ export default async function InvoiceDetailPage({ params }: { params: { id: stri
                     <TableBody>
                       {invoice.lines.map((line) => (
                         <TableRow key={line.id}>
+                          <TableCell className="font-mono text-[9px]">{line.variant?.sku ?? "—"}</TableCell>
                           <TableCell className="text-[11px]">{line.description}</TableCell>
                           <TableCell className="text-center text-[11px] tabular">{line.quantity}</TableCell>
                           <TableCell className="text-right text-[11px] tabular">{formatGs(line.unitPrice)}</TableCell>

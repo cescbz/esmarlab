@@ -73,6 +73,7 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
             <Table>
               <TableHeader>
                 <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                  <TableHead>Código</TableHead>
                   <TableHead>Producto</TableHead>
                   <TableHead className="text-right">Cantidad</TableHead>
                   <TableHead className="text-right">Precio unit.</TableHead>
@@ -83,10 +84,11 @@ export default async function QuoteDetailPage({ params }: { params: { id: string
               <TableBody>
                 {quote.lines.map((line) => (
                   <TableRow key={line.id}>
+                    <TableCell className="font-mono text-[10px]">{line.variant.sku}</TableCell>
                     <TableCell>
                       <p className="text-xs font-medium">{line.variant.product.name}</p>
                       <p className="text-[10px] text-muted-foreground">
-                        {line.variant.size} · {line.variant.color} · {line.variant.sku}
+                        {line.variant.size} · {line.variant.color}
                         {line.isCustomized ? ` · ${line.customizationDetail ?? "Personalizado"}` : ""}
                       </p>
                     </TableCell>

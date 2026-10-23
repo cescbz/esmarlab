@@ -168,7 +168,7 @@ function buildColumns(priceLists: PriceListOption[]): ColumnDef<CustomerRow, unk
   },
   {
     accessorKey: "ruc",
-    header: "RUC / CI",
+    header: "Código / RUC",
     cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span>,
   },
   { accessorKey: "city", header: "Ciudad" },

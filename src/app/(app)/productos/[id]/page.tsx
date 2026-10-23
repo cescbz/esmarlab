@@ -340,6 +340,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-secondary/30 hover:bg-secondary/30">
+                          <TableHead>Código</TableHead>
                           <TableHead>Material</TableHead>
                           <TableHead>Variante</TableHead>
                           <TableHead className="text-right">Cantidad</TableHead>
@@ -350,6 +351,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
                       <TableBody>
                         {product.bom.lines.map((line) => (
                           <TableRow key={line.id}>
+                            <TableCell className="font-mono text-[10px]">{line.materialVariant.sku}</TableCell>
                             <TableCell className="text-xs font-medium">{line.materialVariant.product.name}</TableCell>
                             <TableCell className="text-xs text-muted-foreground">
                               {line.materialVariant.color} · {line.materialVariant.size}

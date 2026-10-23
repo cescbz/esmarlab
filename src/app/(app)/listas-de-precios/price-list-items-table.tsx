@@ -16,14 +16,14 @@ export type PriceItemRow = {
 
 const columns: ColumnDef<PriceItemRow, unknown>[] = [
   {
+    accessorKey: "sku",
+    header: "Código",
+    cell: ({ row }) => <span className="font-mono text-[10px]">{row.original.sku}</span>,
+  },
+  {
     accessorKey: "product",
     header: "Producto",
-    cell: ({ row }) => (
-      <div>
-        <p className="font-medium">{row.original.product}</p>
-        <p className="font-mono text-[10px] text-muted-foreground">{row.original.sku}</p>
-      </div>
-    ),
+    cell: ({ row }) => <span className="font-medium">{row.original.product}</span>,
   },
   { accessorKey: "size", header: "Talle" },
   { accessorKey: "color", header: "Color" },

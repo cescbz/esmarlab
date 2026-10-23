@@ -36,14 +36,14 @@ const columns: ColumnDef<KardexRow, unknown>[] = [
     ),
   },
   {
+    accessorKey: "sku",
+    header: "Código",
+    cell: ({ row }) => <span className="font-mono text-[10px]">{row.original.sku}</span>,
+  },
+  {
     accessorKey: "product",
     header: "Producto",
-    cell: ({ row }) => (
-      <div>
-        <p className="text-xs font-medium">{row.original.product}</p>
-        <p className="font-mono text-[10px] text-muted-foreground">{row.original.sku}</p>
-      </div>
-    ),
+    cell: ({ row }) => <span className="text-xs font-medium">{row.original.product}</span>,
   },
   { accessorKey: "variant", header: "Variante" },
   { accessorKey: "warehouse", header: "Depósito" },

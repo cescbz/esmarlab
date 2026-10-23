@@ -18,6 +18,7 @@ export type ProductionOrderRow = {
   id: string;
   number: string;
   product: string;
+  productCode: string;
   order: string;
   customer: string;
   quantity: number;
@@ -38,6 +39,11 @@ const columns: ColumnDef<ProductionOrderRow, unknown>[] = [
         {row.original.number}
       </Link>
     ),
+  },
+  {
+    accessorKey: "productCode",
+    header: "Código producto",
+    cell: ({ row }) => <span className="font-mono text-[10px]">{row.original.productCode}</span>,
   },
   {
     accessorKey: "product",

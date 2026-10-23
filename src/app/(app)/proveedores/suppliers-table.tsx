@@ -130,7 +130,7 @@ const columns: ColumnDef<SupplierRow, unknown>[] = [
     header: "Proveedor",
     cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
   },
-  { accessorKey: "ruc", header: "RUC", cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span> },
+  { accessorKey: "ruc", header: "Código / RUC", cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span> },
   { accessorKey: "contactName", header: "Contacto" },
   { accessorKey: "phone", header: "Teléfono" },
   {
