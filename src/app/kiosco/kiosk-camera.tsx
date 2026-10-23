@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import NextImage from "next/image";
-import { Camera, RefreshCw, Upload } from "lucide-react";
+import { Camera, Loader2, RefreshCw, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 async function compressImage(dataUrl: string): Promise<string> {
@@ -39,6 +39,7 @@ export function KioskCamera({
   const streamRef = useRef<MediaStream | null>(null);
   const [photo, setPhoto] = useState<string | null>(null);
   const [active, setActive] = useState(false);
+  const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export function KioskCamera({
 
   async function startCamera() {
     setError(null);
+    setStarting(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user" },
@@ -63,6 +65,8 @@ export function KioskCamera({
     } catch {
       setError("No pudimos abrir la cámara. Podés subir una foto.");
       setActive(false);
+    } finally {
+      setStarting(false);
     }
   }
 
@@ -118,8 +122,7 @@ export function KioskCamera({
         ref={fileRef}
         type="file"
         accept="image/*"
-        capture="user"
-        className="hidden"
+        className="sr-only"
         data-testid="kiosk-photo-input"
         onChange={chooseFile}
       />
@@ -154,19 +157,26 @@ export function KioskCamera({
         </div>
       ) : (
         <div className="space-y-2">
-          <Button type="button" className="w-full" onClick={startCamera}>
-            <Camera className="mr-1.5 h-4 w-4" />
-            Activar cámara
+          <Button type="button" className="w-full" onClick={startCamera} disabled={starting}>
+            {starting ? (
+              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            ) : (
+              <Camera className="mr-1.5 h-4 w-4" />
+            )}
+            {starting ? "Abriendo cámara..." : "Activar cámara"}
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="w-full"
+            className="w-full border-brand/25 text-foreground"
             onClick={() => fileRef.current?.click()}
           >
             <Upload className="mr-1.5 h-4 w-4" />
             Subir foto
           </Button>
+          <p className="text-[11px] text-muted-foreground">
+            Si la cámara no abre, subí una foto desde el archivo o la galería.
+          </p>
           {error ? <p className="text-xs text-amber-700">{error}</p> : null}
           {required ? (
             <p className="text-[11px] text-muted-foreground">La foto es obligatoria.</p>
