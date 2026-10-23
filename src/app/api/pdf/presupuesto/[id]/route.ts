@@ -2,6 +2,7 @@ import React from "react";
 import { NextRequest } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { auth } from "@/auth";
+import { canViewPdf } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { QuotePdf } from "@/lib/pdf/quote-pdf";
 
@@ -10,6 +11,7 @@ export const runtime = "nodejs";
 export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) return new Response("No autorizado", { status: 401 });
+  if (!canViewPdf(session.user.role, "presupuesto")) return new Response("Sin permiso", { status: 403 });
 
   const quote = await prisma.quote.findUnique({
     where: { id: params.id },

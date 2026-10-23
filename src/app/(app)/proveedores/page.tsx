@@ -13,6 +13,7 @@ export default async function SuppliersPage() {
   const suppliers = await prisma.supplier.findMany({ orderBy: { name: "asc" } });
   const rows: SupplierRow[] = suppliers.map((supplier) => ({
     id: supplier.id,
+    code: supplier.code ?? "—",
     name: supplier.name,
     ruc: formatRuc(supplier.rucBase, supplier.dv),
     contactName: supplier.contactName ?? "—",

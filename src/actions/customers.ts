@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-guards";
 import { customerSchema } from "@/lib/validators/customer";
 import { isValidRuc, onlyDigits } from "@/lib/fiscal";
+import { nextCustomerCode } from "@/lib/codes";
 
 export type ActionResult = {
   ok: boolean;
@@ -65,12 +66,18 @@ export async function saveCustomer(
 
   try {
     if (customerId) {
-      await prisma.customer.update({ where: { id: customerId }, data: payload });
+      const current = await prisma.customer.findUnique({ where: { id: customerId }, select: { code: true } });
+      await prisma.customer.update({
+        where: { id: customerId },
+        data: { ...payload, code: current?.code ?? (await nextCustomerCode()) },
+      });
       revalidatePath("/clientes");
       revalidatePath(`/clientes/${customerId}`);
       return { ok: true, id: customerId };
     }
-    const customer = await prisma.customer.create({ data: payload });
+    const customer = await prisma.customer.create({
+      data: { ...payload, code: await nextCustomerCode() },
+    });
     revalidatePath("/clientes");
     return { ok: true, id: customer.id };
   } catch {

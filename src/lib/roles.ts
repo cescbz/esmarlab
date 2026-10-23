@@ -110,6 +110,20 @@ export function canAccess(role: AppRole, pathname: string): boolean {
   return false;
 }
 
+export type PdfKind = "presupuesto" | "kude" | "recibo" | "arqueo" | "xml";
+
+const PDF_ACCESS: Record<PdfKind, AppRole[]> = {
+  presupuesto: ["ADMIN", "GERENCIA", "VENTAS"],
+  kude: ["ADMIN", "GERENCIA", "VENTAS", "CAJA"],
+  recibo: ["ADMIN", "GERENCIA", "VENTAS", "CAJA"],
+  arqueo: ["ADMIN", "GERENCIA", "CAJA"],
+  xml: ["ADMIN", "GERENCIA", "VENTAS", "CAJA"],
+};
+
+export function canViewPdf(role: AppRole, kind: PdfKind): boolean {
+  return PDF_ACCESS[kind].includes(role);
+}
+
 export function canWrite(role: AppRole, module: string): boolean {
   if (role === "ADMIN") return true;
   if (role === "GERENCIA") return false;

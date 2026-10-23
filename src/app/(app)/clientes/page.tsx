@@ -46,6 +46,7 @@ export default async function CustomersPage({
 
   let rows: CustomerRow[] = customers.map((customer) => ({
     id: customer.id,
+    code: customer.code ?? "—",
     name: customer.name,
     type: customer.type,
     ruc: formatRuc(customer.rucBase, customer.dv),

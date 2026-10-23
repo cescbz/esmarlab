@@ -146,6 +146,27 @@ export async function seedInvoices(
   }
   drafts.sort((a, b) => a.date.getTime() - b.date.getTime());
 
+  const todayKey = toDateInputValue(now);
+  const todayAt = (time: string) => new Date(`${todayKey}T${time}:00-03:00`);
+  if (drafts.length >= 3) {
+    const recent = drafts.slice(-3);
+    recent[0].date = todayAt("10:15");
+    recent[0].condition = InvoiceCondition.CONTADO;
+    recent[0].termDays = 0;
+    recent[0].point = "ep_1";
+    recent[0].status = SifenStatus.APROBADO;
+    recent[1].date = todayAt("12:40");
+    recent[1].condition = InvoiceCondition.CREDITO;
+    recent[1].termDays = 30;
+    recent[1].point = "ep_1";
+    recent[1].status = SifenStatus.APROBADO;
+    recent[2].date = todayAt("16:20");
+    recent[2].condition = InvoiceCondition.CREDITO;
+    recent[2].termDays = 30;
+    recent[2].point = "ep_2";
+    recent[2].status = SifenStatus.APROBADO;
+  }
+
   const invoiceData: Prisma.InvoiceCreateManyInput[] = [];
   const invoiceLineData: Prisma.InvoiceLineCreateManyInput[] = [];
   const eventData: Prisma.SifenEventCreateManyInput[] = [];
@@ -434,6 +455,8 @@ export async function seedReceipts(
   const counters: Record<string, number> = { ep_1: 0, ep_2: 0 };
   let allocationCounter = 0;
   let paymentCounter = 0;
+  const todayKey = toDateInputValue(now);
+  const todayAt = (time: string) => new Date(`${todayKey}T${time}:00-03:00`);
   const methodIds = [
     "pm_EFECTIVO",
     "pm_EFECTIVO",
@@ -446,6 +469,70 @@ export async function seedReceipts(
   const candidates = invoiceRecords.filter(
     (invoice) => invoice.condition === InvoiceCondition.CREDITO && invoice.balance > 0
   );
+  const todayInvoice = invoiceRecords.find(
+    (invoice) =>
+      invoice.condition === InvoiceCondition.CREDITO &&
+      invoice.balance > 0 &&
+      toDateInputValue(invoice.issueDate) === todayKey &&
+      invoice.point === "ep_1"
+  );
+  if (todayInvoice) {
+    const todayReceiptId = `rec_${receipts.length + 1}`;
+    const todayPoint = data.points.find((point) => point.id === todayInvoice.point)!;
+    const amount = Math.min(
+      todayInvoice.balance,
+      Math.max(1000, money(todayInvoice.balance * 0.4))
+    );
+    if (amount > 0) {
+      const seq = ++counters[todayInvoice.point];
+      const number = `REC-${todayPoint.establecimiento}-${todayPoint.punto}-${String(seq).padStart(7, "0")}`;
+      const receiptDate = todayAt("11:30");
+      const session = sessionKeyMap.get(`${todayKey}_caja_1`) ?? null;
+      receipts.push({
+        id: todayReceiptId,
+        number,
+        customerId: todayInvoice.customerId,
+        cashSessionId: session,
+        expeditionPointId: todayInvoice.point,
+        date: receiptDate,
+        total: amount,
+        userId: "caja",
+        observations: "Cobro del día",
+        createdAt: receiptDate,
+      });
+      allocations.push({
+        id: `alloc_${++allocationCounter}`,
+        receiptId: todayReceiptId,
+        invoiceId: todayInvoice.id,
+        amount,
+      });
+      todayInvoice.paidAmount += amount;
+      todayInvoice.balance = Math.max(0, todayInvoice.balance - amount);
+      payments.push({
+        id: `pay_${++paymentCounter}`,
+        receiptId: todayReceiptId,
+        paymentMethodId: "pm_EFECTIVO",
+        amount,
+        reference: null,
+        bank: null,
+        chequeNumber: null,
+      });
+      if (session) {
+        movements.push({
+          id: `cm_rec_${movements.length + 1}`,
+          cashSessionId: session,
+          type: CashMovementType.INGRESO_COBRO,
+          paymentMethodId: "pm_EFECTIVO",
+          amount,
+          reference: number,
+          description: `Cobro ${number}`,
+          date: receiptDate,
+          receiptId: todayReceiptId,
+        });
+      }
+    }
+  }
+
   const paymentTargets = new Map<string, number>();
   for (const invoice of candidates) {
     const profile = randInt(1, 100);
@@ -453,7 +540,7 @@ export async function seedReceipts(
     paymentTargets.set(invoice.id, Math.round(invoice.total * fraction));
   }
 
-  for (let attempt = 0; attempt < 400; attempt++) {
+  for (let attempt = 0; receipts.length < 400 && attempt < 800; attempt++) {
     const available = candidates.filter(
       (invoice) =>
         invoice.balance > 0 &&

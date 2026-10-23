@@ -216,6 +216,7 @@ model CashRegister {
 
 model Customer {
   id           String       @id @default(cuid())
+  code         String?      @unique
   type         CustomerType
   name         String
   rucBase      String
@@ -242,6 +243,7 @@ model Customer {
 
 model Supplier {
   id            String         @id @default(cuid())
+  code          String?        @unique
   name          String
   rucBase       String
   dv            String

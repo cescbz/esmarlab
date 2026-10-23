@@ -2,6 +2,7 @@ import React from "react";
 import { NextRequest } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { auth } from "@/auth";
+import { canViewPdf } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { ArqueoPdf } from "@/lib/pdf/arqueo-pdf";
 import { getSessionSummary } from "@/lib/cash";
@@ -13,6 +14,7 @@ type Detail = { medio: string; esperado: number; contado: number; diferencia: nu
 export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) return new Response("No autorizado", { status: 401 });
+  if (!canViewPdf(session.user.role, "arqueo")) return new Response("Sin permiso", { status: 403 });
 
   const [cashSession, company] = await Promise.all([
     prisma.cashSession.findUnique({

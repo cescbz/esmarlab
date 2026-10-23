@@ -34,6 +34,7 @@ export type PriceListOption = { id: string; name: string };
 
 export type CustomerRow = {
   id: string;
+  code: string;
   name: string;
   type: string;
   ruc: string;
@@ -153,6 +154,11 @@ function CustomerActions({ customer, priceLists }: { customer: CustomerRow; pric
 function buildColumns(priceLists: PriceListOption[]): ColumnDef<CustomerRow, unknown>[] {
   return [
   {
+    accessorKey: "code",
+    header: "Código",
+    cell: ({ row }) => <span className="font-mono text-[11px] font-medium">{row.original.code}</span>,
+  },
+  {
     accessorKey: "name",
     header: "Cliente",
     cell: ({ row }) => (
@@ -168,7 +174,7 @@ function buildColumns(priceLists: PriceListOption[]): ColumnDef<CustomerRow, unk
   },
   {
     accessorKey: "ruc",
-    header: "Código / RUC",
+    header: "RUC / CI",
     cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span>,
   },
   { accessorKey: "city", header: "Ciudad" },
@@ -234,7 +240,7 @@ export function CustomersTable({
     <DataTable
       data={data}
       columns={columns}
-      searchKeys={["name", "ruc", "city", "priceList"]}
+      searchKeys={["code", "name", "ruc", "city", "priceList"]}
       searchPlaceholder="Buscar por nombre, RUC o ciudad…"
       toolbar={toolbar}
       emptyMessage="No hay clientes que coincidan con los filtros."

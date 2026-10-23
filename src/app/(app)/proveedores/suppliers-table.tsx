@@ -30,6 +30,7 @@ import { SupplierFormModal } from "./supplier-form-modal";
 
 export type SupplierRow = {
   id: string;
+  code: string;
   name: string;
   ruc: string;
   contactName: string;
@@ -126,11 +127,16 @@ function Actions({ supplier }: { supplier: SupplierRow }) {
 
 const columns: ColumnDef<SupplierRow, unknown>[] = [
   {
+    accessorKey: "code",
+    header: "Código",
+    cell: ({ row }) => <span className="font-mono text-[11px] font-medium">{row.original.code}</span>,
+  },
+  {
     accessorKey: "name",
     header: "Proveedor",
     cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
   },
-  { accessorKey: "ruc", header: "Código / RUC", cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span> },
+  { accessorKey: "ruc", header: "RUC", cell: ({ row }) => <span className="font-mono text-xs">{row.original.ruc}</span> },
   { accessorKey: "contactName", header: "Contacto" },
   { accessorKey: "phone", header: "Teléfono" },
   {
@@ -165,7 +171,7 @@ export function SuppliersTable({ data }: { data: SupplierRow[] }) {
     <DataTable
       data={data}
       columns={columns}
-      searchKeys={["name", "ruc", "contactName"]}
+      searchKeys={["code", "name", "ruc", "contactName"]}
       searchPlaceholder="Buscar proveedor o RUC…"
       emptyMessage="No hay proveedores."
     />

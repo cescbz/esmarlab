@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Download, FileText } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { canViewPdf } from "@/lib/roles";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
@@ -17,6 +19,8 @@ export default async function KudeViewerPage({
   params: { id: string };
   searchParams: { formato?: string };
 }) {
+  const authSession = await auth();
+  if (!authSession?.user || !canViewPdf(authSession.user.role, "kude")) notFound();
   const invoice = await prisma.invoice.findUnique({
     where: { id: params.id },
     include: { customer: true },

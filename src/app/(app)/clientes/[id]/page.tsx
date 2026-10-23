@@ -156,6 +156,7 @@ export default async function CustomerDetailPage({ params }: { params: { id: str
                 <CardTitle className="text-sm font-semibold">Información del cliente</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 p-5 sm:grid-cols-2">
+                <InfoRow icon={FileText} label="Código" value={customer.code ?? "—"} mono />
                 <InfoRow icon={Building2} label="Razón social" value={customer.name} />
                 <InfoRow icon={FileText} label="RUC / CI" value={formatRuc(customer.rucBase, customer.dv)} mono />
                 <InfoRow icon={MapPin} label="Dirección" value={[customer.address, customer.city].filter(Boolean).join(", ") || "—"} />

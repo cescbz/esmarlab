@@ -114,11 +114,12 @@ export function numeroALetras(valor: number): string {
   }
 
   if (unidades > 0) {
-    parts.push(groupToWords(unidades));
+    parts.push(groupToWords(unidades, true));
   }
 
   const letras = parts.join(" ").replace(/\s+/g, " ").trim();
-  return `${letras} ${n === 1 ? "guaraní" : "guaraníes"}`;
+  const needsDe = millones > 0 && miles === 0 && unidades === 0;
+  return `${letras}${needsDe ? " de" : ""} ${n === 1 ? "guaraní" : "guaraníes"}`;
 }
 
 export function numeroALetrasMayusculas(valor: number): string {

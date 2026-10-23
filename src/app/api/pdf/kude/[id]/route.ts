@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import QRCode from "qrcode";
 import { auth } from "@/auth";
+import { canViewPdf } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { KudeA4, KudeTicket } from "@/lib/pdf/kude-pdf";
 import { simulatedConsultaUrl } from "@/lib/sifen";
@@ -12,6 +13,7 @@ export const runtime = "nodejs";
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) return new Response("No autorizado", { status: 401 });
+  if (!canViewPdf(session.user.role, "kude")) return new Response("Sin permiso", { status: 403 });
 
   const invoice = await prisma.invoice.findUnique({
     where: { id: params.id },

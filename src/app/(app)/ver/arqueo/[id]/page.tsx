@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Download } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { canViewPdf } from "@/lib/roles";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
 import { PdfViewer } from "@/components/pdf/pdf-viewer";
@@ -11,6 +13,8 @@ import { formatDate } from "@/lib/format";
 export const metadata: Metadata = { title: "Visor de arqueo" };
 
 export default async function ArqueoPdfViewerPage({ params }: { params: { id: string } }) {
+  const authSession = await auth();
+  if (!authSession?.user || !canViewPdf(authSession.user.role, "arqueo")) notFound();
   const session = await prisma.cashSession.findUnique({
     where: { id: params.id },
     include: { cashRegister: true },

@@ -100,6 +100,7 @@ export type VariantInfo = {
 
 export type CustomerSeed = {
   id: string;
+  code: string;
   type: import("@prisma/client").CustomerType;
   name: string;
   rucBase: string;
@@ -116,6 +117,7 @@ export type CustomerSeed = {
 
 export type SupplierSeed = {
   id: string;
+  code: string;
   name: string;
   rucBase: string;
   dv: string;

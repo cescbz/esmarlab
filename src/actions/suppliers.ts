@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/auth-guards";
 import { supplierSchema } from "@/lib/validators/supplier";
 import { isValidRuc, onlyDigits } from "@/lib/fiscal";
+import { nextSupplierCode } from "@/lib/codes";
 import type { ActionResult } from "./customers";
 
 export async function saveSupplier(values: unknown, supplierId?: string): Promise<ActionResult> {
@@ -44,11 +45,17 @@ export async function saveSupplier(values: unknown, supplierId?: string): Promis
 
   try {
     if (supplierId) {
-      await prisma.supplier.update({ where: { id: supplierId }, data: payload });
+      const current = await prisma.supplier.findUnique({ where: { id: supplierId }, select: { code: true } });
+      await prisma.supplier.update({
+        where: { id: supplierId },
+        data: { ...payload, code: current?.code ?? (await nextSupplierCode()) },
+      });
       revalidatePath("/proveedores");
       return { ok: true, id: supplierId };
     }
-    const supplier = await prisma.supplier.create({ data: payload });
+    const supplier = await prisma.supplier.create({
+      data: { ...payload, code: await nextSupplierCode() },
+    });
     revalidatePath("/proveedores");
     return { ok: true, id: supplier.id };
   } catch {

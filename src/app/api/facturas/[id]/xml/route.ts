@@ -1,10 +1,12 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/auth";
+import { canViewPdf } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user) return new Response("No autorizado", { status: 401 });
+  if (!canViewPdf(session.user.role, "xml")) return new Response("Sin permiso", { status: 403 });
   const invoice = await prisma.invoice.findUnique({
     where: { id: params.id },
     select: { cdc: true, xml: true },

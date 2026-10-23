@@ -196,6 +196,7 @@ export async function seedMasters(): Promise<SeedData> {
     const base = String(80020000 + index);
     return {
       id: `sup_${index + 1}`,
+      code: `PROV-${String(index + 1).padStart(4, "0")}`,
       name: supplier.name,
       rucBase: base,
       dv: String(calculateDV(base)),
@@ -221,6 +222,7 @@ export async function seedMasters(): Promise<SeedData> {
     const termDays = pick([15, 30, 30, 30, 60, 90]);
     return {
       id: `cus_${String(index + 1).padStart(3, "0")}`,
+      code: `CLI-${String(index + 1).padStart(4, "0")}`,
       type: isPerson ? CustomerType.PERSONA_FISICA : CustomerType.PERSONA_JURIDICA,
       name,
       rucBase: base,
@@ -241,6 +243,7 @@ export async function seedMasters(): Promise<SeedData> {
   await prisma.customer.create({
     data: {
       id: "cus_final",
+      code: "CLI-0000",
       type: CustomerType.PERSONA_FISICA,
       name: "Consumidor final",
       rucBase: "44444444",
